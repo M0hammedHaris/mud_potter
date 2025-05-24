@@ -9,6 +9,7 @@ import { OurBestSeller } from "@/components/our-best-seller";
 import CustomerReviews from "@/components/customer-reviews";
 import { OurBlog } from "@/components/our-blog";
 import { FAQ } from "@/components/faq";
+import { Footer } from "@/components/footer";
 
 export default function Home() {
   // Define the carousel images - using 4 different pottery-related images
@@ -33,6 +34,7 @@ export default function Home() {
       <CustomerReviews />
       <OurBlog />
       <FAQ />
+      <Footer />
     </div>
   );
 }
