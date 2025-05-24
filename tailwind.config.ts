@@ -11,8 +11,12 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: "var(--primary)",
+        secondary: "var(--secondary)",
+        "primary-text": "var(--primary-text)",
       },
     },
   },
+  darkMode: "class", // Enable class-based dark mode in addition to media query
   plugins: [],
 } satisfies Config;
