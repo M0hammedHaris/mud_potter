@@ -6,6 +6,7 @@ import { BrowseCategory } from "@/components/browse-category";
 import { TrendingProducts } from "@/components/trending-products";
 import { DealsOfTheMonth } from "@/components/deals-of-the-month";
 import { OurBestSeller } from "@/components/our-best-seller";
+import CustomerReviews from "@/components/customer-reviews";
 
 export default function Home() {
   // Define the carousel images - using 4 different pottery-related images
@@ -27,6 +28,7 @@ export default function Home() {
       <OurBestSeller />
       <DealsOfTheMonth />
       <TrendingProducts />
+      <CustomerReviews />
     </div>
   );
 }

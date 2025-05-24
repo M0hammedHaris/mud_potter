@@ -26,6 +26,12 @@
   --black: #000000;
   --overlay: rgba(0, 0, 0, 0.3);
   --gray: #6b7280;
+
+  /* Custom colors for CustomerReviews component */
+  --review-section-bg: #ECFDF0;
+  --review-nav-button-bg: #D9D9D9;
+  --star-color: #FFD500;
+  --review-heading-text: #C8FFC8;
 }
 
 /* @media (prefers-color-scheme: dark) {
