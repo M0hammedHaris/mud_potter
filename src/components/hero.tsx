@@ -109,10 +109,10 @@ export function Hero({ title, images }: HeroProps) {
       </div>
 
       {/* Hero content */}
-      <div className="relative z-10 flex flex-col justify-between h-full">
-        {/* Hero text */}
-        <div className="pt-28 md:pt-36 px-6 md:px-16">
-          <div className="inline-block px-6 py-4 rounded-lg">
+      <div className="relative z-10 flex flex-col justify-between h-full pointer-events-none">
+        {/* Hero text - pointer-events-auto restores pointer events just for the text content */}
+        <div className="pt-28 md:pt-36 px-6 md:px-16 mt-16">
+          <div className="inline-block px-6 py-4 rounded-lg pointer-events-auto">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white max-w-xl leading-tight">
               {title}
             </h1>
@@ -122,7 +122,7 @@ export function Hero({ title, images }: HeroProps) {
         {/* Controls and navigation */}
         <div className="px-6 pb-10 md:px-16 md:pb-20 flex flex-col">
           {/* Current slide indicator and navigation controls - aligned horizontally */}
-          <div className="flex items-center justify-between w-full mb-6 z-10">
+          <div className="flex items-center justify-between w-full mb-6 z-10 pointer-events-auto">
             {/* Slide indicator - left side */}
             <div className="flex items-center space-x-3 backdrop-blur-sm bg-overlay bg-opacity-20 px-4 py-2 rounded-full">
               <span className="text-white font-medium">
