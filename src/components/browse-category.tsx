@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { ViewMoreButton } from "@/components/ui/view-more-button";
 
 export function BrowseCategory() {
   return (
@@ -10,29 +11,7 @@ export function BrowseCategory() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground font-['Gill_Sans_MT']">
             Browse By Category
           </h2>
-          <div className="flex items-center gap-4">
-            <span className="text-xl md:text-2xl font-medium text-muted-foreground">
-              View More
-            </span>
-            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center relative">
-              <svg 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-                className="transform rotate-[-35deg]"
-              >
-                <path 
-                  d="M5 12H19M19 12L12 5M19 12L12 19" 
-                  stroke="white" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
+          <ViewMoreButton href="/categories" />
         </div>
         
         {/* Separator line */}
