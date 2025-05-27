@@ -52,14 +52,14 @@ export function Navigation() {
     }, []);
 
     return (
-        <header className="absolute top-0 w-full z-50">
+        <header className="absolute top-4 left-4 right-4 z-50">
             {/* Debug indicator - only rendered on client side to avoid hydration errors */}
             {isClient && process.env.NODE_ENV !== 'production' && (
                 <div className="menu-debug">
                     Menu state: {isMobileMenuOpen ? 'Open' : 'Closed'}
                 </div>
             )}
-            <nav className="flex items-center justify-between px-6 py-4 md:px-16">
+            <nav className="flex items-center justify-between px-6 py-4 md:px-16 rounded-t-[20px]">
                 {/* Mobile menu toggle button */}
                 <div className="md:hidden relative z-50">
                     <Button

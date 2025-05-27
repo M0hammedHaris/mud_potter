@@ -75,12 +75,12 @@ export function Hero({ title, images }: HeroProps) {
 
   return (
     <section
-      className="relative h-screen"
+      className="relative h-screen bg-[#FAEFCA] p-4"
       onTouchStart={() => setIsPaused(true)}
       onTouchEnd={() => setTimeout(() => setIsPaused(false), 5000)}
     >
       {/* Main background that changes with slides */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-4 z-0 rounded-[20px] overflow-hidden">
         {images.map((image, index) => (
           <div
             key={index}
@@ -103,13 +103,13 @@ export function Hero({ title, images }: HeroProps) {
               }}
             />
             {/* Add a subtle overlay to ensure text readability */}
-            <div className="absolute inset-0 bg-overlay"></div>
+            <div className="absolute inset-0 bg-overlay rounded-[20px]"></div>
           </div>
         ))}
       </div>
 
       {/* Hero content */}
-      <div className="relative z-10 flex flex-col justify-between h-full pointer-events-none">
+      <div className="relative z-10 flex flex-col justify-between h-full pointer-events-none rounded-[20px]">
         {/* Hero text - pointer-events-auto restores pointer events just for the text content */}
         <div className="pt-28 md:pt-36 px-6 md:px-16 mt-16">
           <div className="inline-block px-6 py-4 rounded-lg pointer-events-auto">
