@@ -4,20 +4,20 @@ import { ViewMoreButton } from "@/components/ui/view-more-button";
 
 export function BrowseCategory() {
   return (
-    <section className="py-8 px-4 md:px-8 lg:px-12 relative bg-secondary">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Header with View More button */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground font-['Gill_Sans_MT']">
-            Browse By Category
+    <section className="py-12 md:py-16 lg:py-20 bg-[var(--background)] px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto max-w-7xl">
+        {/* Header: Title and View More button */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">
+            Browse by Category
           </h2>
           <ViewMoreButton href="/categories" />
         </div>
-        
-        {/* Separator line */}
-        <div className="w-full h-[1px] bg-border mb-6"></div>
-        
-        {/* Category cards grid */}
+
+        {/* Separator Line */}
+        <hr className="mb-8 md:mb-12 border-t border-[var(--border)]" />
+
+        {/* Categories Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Garden Decors - Large Card */}
           <div className="relative rounded-lg overflow-hidden h-[498px]">

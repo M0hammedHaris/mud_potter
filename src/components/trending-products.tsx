@@ -52,8 +52,8 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
           <ViewMoreButton href="/products/trending" />
         </div>
         
-        {/* Separator line */}
-        <div className="w-full h-[1px] bg-border mb-6"></div>
+        {/* Separator Line */}
+        <hr className="mb-8 md:mb-12 border-t border-[var(--border)]" />
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
