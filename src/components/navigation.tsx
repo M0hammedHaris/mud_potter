@@ -83,24 +83,20 @@ export function Navigation() {
                 {/* Desktop navigation */}
                 <div className="hidden md:flex items-center gap-4" style={{ width: "auto", height: "36px" }}>
                     {/* Navigation Items */}
-                    <Button 
-                        variant="ghost" 
-                        className="flex justify-center items-center px-4 py-1 w-[90px] h-[36px] bg-secondary rounded-[18px] text-primary text-[16px] font-semibold hover:bg-secondary/90"
-                    >
-                        Home
-                    </Button>
-                    <Button 
-                        variant="ghost" 
-                        className="flex justify-center items-center px-4 py-1 w-[90px] h-[36px] bg-white/30 rounded-[18px] text-white/80 text-[15px] font-semibold hover:bg-white/40"
-                    >
-                        Shop
-                    </Button>
-                    <Button 
-                        variant="ghost" 
-                        className="flex justify-center items-center px-4 py-1 w-[90px] h-[36px] bg-white/30 rounded-[18px] text-white/80 text-[15px] font-semibold hover:bg-white/40"
-                    >
-                        About
-                    </Button>
+                    {navItems.map((item, index) => (
+                        <Button 
+                            key={item.label}
+                            variant="ghost" 
+                            className={`flex justify-center items-center px-4 py-1 w-[90px] h-[36px] text-[16px] font-semibold transition-all ${
+                                index === activeIndex 
+                                ? "bg-secondary rounded-[18px] text-primary" 
+                                : "bg-transparent text-white/80 hover:bg-white/30 hover:rounded-[18px]"
+                            }`}
+                            onClick={() => setActiveIndex(index)}
+                        >
+                            {item.label}
+                        </Button>
+                    ))}
                 </div>
 
                 <div className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-3xl font-bold text-white">LOGO</div>
