@@ -8,6 +8,7 @@ import "./navigation.css";
 export function Navigation() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [activeSearch, setActiveSearch] = useState(false);
 
     // Navigation items data
     const navItems = [
@@ -102,11 +103,31 @@ export function Navigation() {
                 <div className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-3xl font-bold text-white">LOGO</div>
                 
                 <div className="flex items-center space-x-4">
-                    <Button variant="ghost" className="rounded-full bg-gray/40 backdrop-blur-sm p-2 transition-all hover:bg-gray/60">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5 text-white">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                    </Button>
+                    <div className="relative">
+                        <div className={`flex items-center transition-all duration-500 ease-in-out ${
+                            activeSearch 
+                                ? "w-64 bg-white/20 backdrop-blur-sm rounded-full border border-white/30" 
+                                : "w-10 h-10 bg-white/30 rounded-full"
+                        }`}>
+                            <Button 
+                                variant="ghost" 
+                                className="rounded-full backdrop-blur-sm hover:bg-white/10 p-3 flex-shrink-0"
+                                onClick={() => setActiveSearch(!activeSearch)}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5 text-white">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                </svg>
+                            </Button>
+                            {activeSearch && (
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    className="flex-1 bg-transparent text-white placeholder-white/70 px-4 py-2 outline-none text-sm animate-fade-in"
+                                    autoFocus
+                                />
+                            )}
+                        </div>
+                    </div>
                     <div className="w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden bg-gray-200">
                         <Image 
                             src="/images/Leonardo_Phoenix_10_A_beautifully_styled_highquality_image_of_0.png"
