@@ -42,8 +42,8 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
   const displayProducts = products || defaultProducts;
 
   return (
-    <section className="py-12 px-4 md:px-8 lg:px-12 relative">
-      <div className="max-w-[1600px] mx-auto">
+    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+      <div className="container mx-auto max-w-full">
         {/* Header with Title and View More */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-['Gill_Sans_MT'] text-foreground">

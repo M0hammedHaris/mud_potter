@@ -58,8 +58,8 @@ export function DealsOfTheMonth() {
   };
 
   return (
-    <section className="w-full py-12 px-4 md:px-8 lg:px-16 overflow-hidden">
-      <div className="container mx-auto">
+    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+      <div className="container mx-auto max-w-full">
         {/* Grid container for the deal images */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-8">
           {/* First image - takes 3 columns on large screens */}

@@ -4,8 +4,8 @@ import { ViewMoreButton } from "@/components/ui/view-more-button";
 
 export function BrowseCategory() {
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-[var(--background)] px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto max-w-7xl">
+    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+      <div className="container mx-auto max-w-full">
         {/* Header: Title and View More button */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">

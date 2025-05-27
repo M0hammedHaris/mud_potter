@@ -89,8 +89,10 @@ export function FAQ() {
   };
 
   return (
-    <section className="bg-background py-12 md:py-16 lg:py-20" data-testid="faq-section">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    // <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+    //   <div className="container mx-auto max-w-full"></div>
+    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]" data-testid="faq-section">
+      <div className="container mx-auto max-w-full">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-12">
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-0">
             FAQ
@@ -98,7 +100,7 @@ export function FAQ() {
           <ViewMoreButton href="/faq" />
         </div>
         <hr className="border-t border-border mb-8 md:mb-12" />
-        <div className="space-y-6">
+        <div className="space-y-10">
           {faqData.map((item) => (
             <FAQItemComponent
               key={item.id}
