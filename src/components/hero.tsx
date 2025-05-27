@@ -19,6 +19,30 @@ interface HeroProps {
 export function Hero({ title, images }: HeroProps) {
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [api, setApi] = React.useState<CarouselApi | null>(null);
+  const [isPaused, setIsPaused] = React.useState(false);
+
+  // States for animations
+  const [curtainsOpen, setCurtainsOpen] = React.useState(false);
+  const [animateTitle, setAnimateTitle] = React.useState(false);
+
+  // Effect to open curtains
+  React.useEffect(() => {
+    const curtainTimer = setTimeout(() => {
+      setCurtainsOpen(true);
+    }, 500); // Delay before curtains start opening
+    return () => clearTimeout(curtainTimer);
+  }, []);
+
+  // Effect to animate title after curtains are open
+  React.useEffect(() => {
+    if (curtainsOpen) {
+      // Wait for curtain animation to complete (1.5s) before showing text
+      const titleTimer = setTimeout(() => {
+        setAnimateTitle(true);
+      }, 1500); // This delay is from the point curtainsOpen becomes true
+      return () => clearTimeout(titleTimer);
+    }
+  }, [curtainsOpen]);
 
   // Setup keyboard navigation
   React.useEffect(() => {
@@ -53,8 +77,6 @@ export function Hero({ title, images }: HeroProps) {
   }, [api]);
 
   // Handle pause on hover
-  const [isPaused, setIsPaused] = React.useState(false);
-
   React.useEffect(() => {
     if (!api || isPaused) return;
 
@@ -136,12 +158,26 @@ export function Hero({ title, images }: HeroProps) {
         ))}
       </div>
 
+      {/* Theatre Curtains - covering the image area initially */}
+      <div
+        className={`absolute inset-4 rounded-[20px] overflow-hidden pointer-events-none ${
+          curtainsOpen ? "curtains-open" : ""
+        }`}
+      >
+        <div className="theatre-curtain theatre-curtain-left"></div>
+        <div className="theatre-curtain theatre-curtain-right"></div>
+      </div>
+
       {/* Hero content */}
       <div className="relative z-10 flex flex-col justify-between h-full pointer-events-none rounded-[20px]">
         {/* Hero text - pointer-events-auto restores pointer events just for the text content */}
         <div className="pt-28 md:pt-36 px-6 md:px-16 mt-16">
           <div className="inline-block px-6 py-4 rounded-lg pointer-events-auto">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white max-w-xl leading-tight">
+            <h1
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white max-w-xl leading-tight ${
+                animateTitle ? "text-animate-enter" : "text-animated"
+              }`}
+            >
               {title}
             </h1>
           </div>
