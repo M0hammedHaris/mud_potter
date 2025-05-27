@@ -9,6 +9,7 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { Facebook, Instagram, XIcon } from "lucide-react"; // Import icons from lucide-react
 
 interface HeroProps {
   title: string;
@@ -75,10 +76,37 @@ export function Hero({ title, images }: HeroProps) {
 
   return (
     <section
-      className="relative h-screen bg-[#FAEFCA] p-4"
+      className="relative h-screen bg-[#FAEFCA] p-0 md:p-4"
       onTouchStart={() => setIsPaused(true)}
       onTouchEnd={() => setTimeout(() => setIsPaused(false), 5000)}
     >
+      {/* Social Media Icons */}
+      <div className="hidden lg:block absolute right-6 top-1/2 -translate-y-1/2 w-[70px] h-[350px] bg-white/10 backdrop-blur-md rounded-full z-20">
+        <div className="flex flex-col items-center justify-center h-full gap-10">
+          <a
+            href="#"
+            className="transition-transform hover:scale-110 text-white"
+            aria-label="Facebook"
+          >
+            <Facebook size={28} />
+          </a>
+          <a
+            href="#"
+            className="transition-transform hover:scale-110 text-white"
+            aria-label="Instagram"
+          >
+            <Instagram size={28} />
+          </a>
+          <a
+            href="#"
+            className="transition-transform hover:scale-110 text-white"
+            aria-label="Twitter"
+          >
+            <XIcon size={28} />
+          </a>
+        </div>
+      </div>
+
       {/* Main background that changes with slides */}
       <div className="absolute inset-4 z-0 rounded-[20px] overflow-hidden">
         {images.map((image, index) => (
