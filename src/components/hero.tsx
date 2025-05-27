@@ -120,7 +120,7 @@ export function Hero({ title, images }: HeroProps) {
         </div>
 
         {/* Controls and navigation */}
-        <div className="px-6 pb-10 md:px-16 md:pb-20 flex flex-col">
+        <div className="px-6 pb-10 md:px-16 md:pb-20 flex flex-col items-center">
           {/* Current slide indicator and navigation controls - aligned horizontally */}
           <div className="flex items-center justify-between w-full mb-6 z-10 pointer-events-auto">
             {/* Slide indicator - left side */}
@@ -211,6 +211,11 @@ export function Hero({ title, images }: HeroProps) {
               ))}
             </CarouselContent>
           </Carousel>
+        </div>
+
+        {/* Mouse icon - hidden on mobile */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-[53px] h-[86px] border-2 border-white rounded-[40px] pointer-events-none hidden md:block">
+          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-1 h-6 bg-white rounded-full animate-scroll-down"></div>
         </div>
       </div>
     </section>
