@@ -2,6 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theatre Curtain Animations */
+.theatre-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background-color: #111; /* Dark curtain color */
+  z-index: 10; /* Above images within the same stacking context */
+}
+
+.theatre-curtain-left {
+  left: 0;
+  transform: translateX(0%);
+}
+
+.theatre-curtain-right {
+  right: 0;
+  transform: translateX(0%);
+}
+
+.curtains-open .theatre-curtain-left {
+  animation: open-curtain-left 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.curtains-open .theatre-curtain-right {
+  animation: open-curtain-right 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes open-curtain-left {
+  from { transform: translateX(0%); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes open-curtain-right {
+  from { transform: translateX(0%); }
+  to { transform: translateX(100%); }
+}
+
+/* Sequential Text Animation */
+.text-animated {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.text-animate-enter {
+  animation: text-fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes text-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  .curtains-open .theatre-curtain-left,
+  .curtains-open .theatre-curtain-right,
+  .text-animate-enter {
+    animation-duration: 0.001s !important; /* Effectively instant */
+    animation-delay: 0s !important;
+  }
+
+  /* Ensure final states are applied immediately for reduced motion */
+  .curtains-open .theatre-curtain-left {
+    transform: translateX(-100%);
+  }
+  .curtains-open .theatre-curtain-right {
+    transform: translateX(100%);
+  }
+  .text-animate-enter {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 :root {
   --background: #FAEFCA; 
   --foreground: #171717;
