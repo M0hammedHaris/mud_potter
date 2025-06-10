@@ -54,6 +54,8 @@ const mockReviews = [
 
 const CustomerReviews = () => {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const handleNextReview = () => {
     setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % mockReviews.length);
@@ -61,6 +63,32 @@ const CustomerReviews = () => {
 
   const handlePrevReview = () => {
     setCurrentReviewIndex((prevIndex) => (prevIndex - 1 + mockReviews.length) % mockReviews.length);
+  };
+
+  // Touch handlers for swipe functionality
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      handleNextReview();
+    } else if (isRightSwipe) {
+      handlePrevReview();
+    }
   };
 
   const currentReview = mockReviews[currentReviewIndex];
@@ -73,18 +101,37 @@ const CustomerReviews = () => {
     >
       <div className="max-w-6xl w-full flex flex-col items-center gap-8 md:gap-12 relative">
         
+        {/* Mobile Previous Button - Bottom Left */}
+        <div className="absolute left-4 bottom-4 block md:hidden z-20">
+          <button 
+            aria-label="Previous review" 
+            onClick={handlePrevReview}
+            className="p-3 bg-[var(--review-nav-button-bg)]/70 backdrop-blur-sm rounded-full hover:bg-[var(--review-nav-button-bg)]/90 transition-all duration-200 shadow-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-black">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Desktop Previous Button */}
         <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block -ml-2 sm:-ml-4 md:-ml-6 lg:-ml-10 xl:-ml-16 z-20">
           <button 
             aria-label="Previous review" 
-            onClick={handlePrevReview} // Added onClick handler
-            className="p-3 bg-[var(--review-nav-button-bg)]/50 rounded-l-xl rounded-r-none hover:bg-[var(--review-nav-button-bg)]/75 transition-colors"
+            onClick={handlePrevReview}
+            className="p-3 bg-[var(--review-nav-button-bg)]/50 rounded-l-xl rounded-r-none hover:bg-[var(--review-nav-button-bg)]/75 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-10 text-black">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
           </button>
         </div>
-        <div className="flex flex-col items-center text-center z-10 px-4">
+        <div 
+          className="flex flex-col items-center text-center z-10 px-4"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           <Image 
             src={currentReview.avatar} // Use dynamic avatar
             alt={`${currentReview.customerName}\'s photo`} // Dynamic alt text
@@ -108,13 +155,43 @@ const CustomerReviews = () => {
             ))}
           </div>
           <p className="text-sm text-gray-600 mt-1 mb-8">{currentReview.customerName} - {new Date(currentReview.date).toLocaleDateString()}</p> {/* Added customer name and date */}
+          
+          {/* Mobile Review Indicators */}
+          <div className="flex justify-center gap-2 mb-4 md:hidden">
+            {mockReviews.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentReviewIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  index === currentReviewIndex 
+                    ? 'bg-primary w-6' 
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Go to review ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
         
+        {/* Mobile Next Button - Bottom Right */}
+        <div className="absolute right-4 bottom-4 block md:hidden z-20">
+          <button 
+            aria-label="Next review"
+            onClick={handleNextReview}
+            className="p-3 bg-primary/70 backdrop-blur-sm rounded-full hover:bg-primary/90 transition-all duration-200 shadow-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-white">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Desktop Next Button */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden md:block -mr-2 sm:-mr-4 md:-mr-6 lg:-mr-10 xl:-mr-16 z-20">
           <button 
             aria-label="Next review"
-            onClick={handleNextReview} // Added onClick handler
-            className="p-3 bg-primary rounded-r-xl rounded-l-none hover:bg-opacity-80 transition-colors"
+            onClick={handleNextReview}
+            className="p-3 bg-primary rounded-r-xl rounded-l-none hover:bg-opacity-80 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-10 text-white">
               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
