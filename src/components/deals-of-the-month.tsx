@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import "../styles/animations.css";
 
 // Countdown timer interface
 interface TimeLeft {
@@ -19,6 +20,47 @@ export function DealsOfTheMonth() {
     minutes: 5,
     seconds: 30,
   });
+  
+  // Animation states
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const firstImageRef = useRef<HTMLDivElement>(null);
+  const secondImageRef = useRef<HTMLDivElement>(null);
+  const thirdImageRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<HTMLDivElement>(null);
+
+  // Intersection Observer for animations
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.2, // Trigger when at least 20% of the element is visible
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        } else {
+          // Reset animation when out of view
+          setIsVisible(false);
+        }
+      });
+    }, options);
+
+    const currentSectionRef = sectionRef.current;
+
+    if (currentSectionRef) {
+      observer.observe(currentSectionRef);
+    }
+
+    return () => {
+      if (currentSectionRef) {
+        observer.unobserve(currentSectionRef);
+      }
+    };
+  }, []);
 
   // Countdown timer logic
   useEffect(() => {
@@ -58,12 +100,18 @@ export function DealsOfTheMonth() {
   };
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+    <section 
+      ref={sectionRef} 
+      className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)] overflow-hidden"
+    >
       <div className="container mx-auto max-w-full">
         {/* Grid container for the deal images */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-8">
           {/* First image - takes 3 columns on large screens */}
-          <div className="lg:col-span-3 h-full">
+          <div 
+            ref={firstImageRef} 
+            className={`lg:col-span-3 h-full ${isVisible ? 'animate-fade-in delay-0' : 'opacity-0'}`}
+          >
             <div className="relative h-[330px] md:h-[415px] lg:h-[600px] rounded-[10px] overflow-hidden border-3 border-white">
               <Image
                 src="/images/Leonardo_Phoenix_10_A_serene_inviting_garden_scene_featuring_a_3.png"
@@ -78,7 +126,10 @@ export function DealsOfTheMonth() {
           </div>
 
           {/* Second image - takes 3 columns on large screens */}
-          <div className="lg:col-span-3 h-full">
+          <div 
+            ref={secondImageRef} 
+            className={`lg:col-span-3 h-full ${isVisible ? 'animate-fade-in delay-200' : 'opacity-0'}`}
+          >
             <div className="relative h-[330px] md:h-[415px] lg:h-[600px] rounded-[10px] overflow-hidden border-3 border-white">
               <div className="absolute inset-0 bg-black bg-opacity-20"></div>
               <Image
@@ -93,7 +144,10 @@ export function DealsOfTheMonth() {
           </div>
 
           {/* Third image with content overlay - takes 6 columns on large screens */}
-          <div className="lg:col-span-6 h-full">
+          <div 
+            ref={thirdImageRef} 
+            className={`lg:col-span-6 h-full ${isVisible ? 'animate-fade-in delay-400' : 'opacity-0'}`}
+          >
             <div className="relative h-[415px] md:h-[500px] lg:h-[600px] rounded-[10px] overflow-hidden border-3 border-white">
               <div className="absolute inset-0 bg-black bg-opacity-60"></div>
               <Image
@@ -106,7 +160,10 @@ export function DealsOfTheMonth() {
               />
 
               {/* Content overlay */}
-              <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-10 lg:p-12">
+              <div 
+                ref={contentRef} 
+                className={`absolute inset-0 flex flex-col justify-center p-6 md:p-10 lg:p-12 ${isVisible ? 'animate-fade-in animation-slow delay-500' : 'opacity-0'}`}
+              >
                 <h2 className="text-3xl md:text-4xl lg:text-[48px] font-bold text-white mb-3 font-['Gill_Sans_MT']">
                   Deals Of The Month
                 </h2>
@@ -142,13 +199,16 @@ export function DealsOfTheMonth() {
                 </Button>
 
                 {/* Countdown timer section */}
-                <div className="mt-12 md:mt-16 lg:mt-20">
+                <div 
+                  ref={timerRef}
+                  className={`mt-12 md:mt-16 lg:mt-20 ${isVisible ? 'animate-fade-in animation-normal delay-500' : 'opacity-0'}`}
+                >
                   <p className="text-xl md:text-2xl lg:text-[32px] text-white mb-3 font-['Gill_Sans_MT']">
                     Hurry, Before It&apos;s Too Late!
                   </p>
                   <div className="flex gap-3 md:gap-5">
                     {/* Days */}
-                    <div className="flex flex-col items-center">
+                    <div className={`flex flex-col items-center ${isVisible ? 'animate-fade-in animation-fast delay-200' : 'opacity-0'}`}>
                       <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] lg:w-[70px] lg:h-[70px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
                         <span className="text-xl md:text-2xl lg:text-[28px] text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                           {formatNumber(timeLeft.days)}
@@ -160,7 +220,7 @@ export function DealsOfTheMonth() {
                     </div>
 
                     {/* Hours */}
-                    <div className="flex flex-col items-center">
+                    <div className={`flex flex-col items-center ${isVisible ? 'animate-fade-in animation-fast delay-300' : 'opacity-0'}`}>
                       <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] lg:w-[70px] lg:h-[70px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
                         <span className="text-xl md:text-2xl lg:text-[28px] text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                           {formatNumber(timeLeft.hours)}
@@ -172,7 +232,7 @@ export function DealsOfTheMonth() {
                     </div>
 
                     {/* Minutes */}
-                    <div className="flex flex-col items-center">
+                    <div className={`flex flex-col items-center ${isVisible ? 'animate-fade-in animation-fast delay-400' : 'opacity-0'}`}>
                       <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] lg:w-[70px] lg:h-[70px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
                         <span className="text-xl md:text-2xl lg:text-[28px] text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                           {formatNumber(timeLeft.minutes)}
@@ -184,7 +244,7 @@ export function DealsOfTheMonth() {
                     </div>
 
                     {/* Seconds */}
-                    <div className="flex flex-col items-center">
+                    <div className={`flex flex-col items-center ${isVisible ? 'animate-fade-in animation-fast delay-500' : 'opacity-0'}`}>
                       <div className="w-[55px] h-[55px] md:w-[65px] md:h-[65px] lg:w-[70px] lg:h-[70px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
                         <span className="text-xl md:text-2xl lg:text-[28px] text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                           {formatNumber(timeLeft.seconds)}
