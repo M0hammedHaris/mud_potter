@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { ViewMoreButton } from "@/components/ui/view-more-button"; // Assuming this path is correct
+import React, { useState, useEffect, useRef } from "react";
+import { ViewMoreButton } from "@/components/ui/view-more-button";
+import { cn } from "@/lib/utils";
 
 interface FAQItemProps {
   id: string;
@@ -13,7 +14,7 @@ interface FAQItemProps {
 
 const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen, toggleItem }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md" data-testid={`faq-item-${id}`}>
+    <div className="rounded-lg border border-border" data-testid={`faq-item-${id}`}>
       <h2>
         <button
           type="button"
@@ -21,34 +22,35 @@ const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen
           aria-expanded={isOpen}
           aria-controls={`faq-answer-${id}`}
           data-testid={`faq-question-${id}`}
-          className="flex items-center justify-between w-full p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="flex items-center justify-between w-full p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors hover:bg-muted/30"
         >
-          <span className="text-xl md:text-2xl font-semibold text-card-foreground">{question}</span>
+          <span className="text-xl md:text-2xl font-semibold text-foreground">{question}</span>
           <span className="ml-6 flex-shrink-0">
             <svg
-              className={`w-6 h-6 transform transition-transform duration-300 ease-in-out ${
+              className={`w-8 h-8 md:w-10 md:h-10 transform transition-transform duration-300 ease-in-out ${
                 isOpen ? "rotate-180" : "rotate-0"
-              } text-card-foreground`}
+              } text-primary`}
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               aria-hidden="true"
+              strokeWidth="2"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </span>
         </button>
       </h2>
       <div
         id={`faq-answer-${id}`}
-        className={`overflow-hidden transition-max-height duration-500 ease-in-out ${
-          isOpen ? "max-h-[1000px]" : "max-h-0"
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
         }`}
         data-testid={`faq-answer-${id}`}
       >
-        <div className="p-6 pt-0">
-          <p className="text-base md:text-lg text-muted-foreground">{answer}</p>
+        <div className="p-6 pt-0 pb-8">
+          <p className="text-lg md:text-xl text-muted-foreground">{answer}</p>
         </div>
       </div>
     </div>
@@ -80,6 +82,26 @@ const faqData = [
 
 export function FAQ() {
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const toggleItem = (id: string) => {
     setOpenItems((prevOpenItems) => ({
@@ -89,27 +111,43 @@ export function FAQ() {
   };
 
   return (
-    // <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
-    //   <div className="container mx-auto max-w-full"></div>
-    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]" data-testid="faq-section">
-      <div className="container mx-auto max-w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-12">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-0">
+    <section 
+      ref={sectionRef} 
+      className="py-12 md:py-16 lg:py-20 px-8" 
+      data-testid="faq-section"
+    >
+      <div className={cn(
+        "container mx-auto max-w-full",
+        isVisible ? "animate-fade-in" : "opacity-0"
+      )}>
+        <div className="flex flex-row justify-between items-start mb-8 md:mb-12">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground">
             FAQ
           </h2>
-          <ViewMoreButton href="/faq" />
+          <ViewMoreButton 
+            href="/faq" 
+            variant="accent"
+            arrowClassName="bg-primary md:w-16 md:h-16" 
+          />
         </div>
         <hr className="border-t border-border mb-8 md:mb-12" />
-        <div className="space-y-10">
-          {faqData.map((item) => (
-            <FAQItemComponent
-              key={item.id}
-              id={item.id}
-              question={item.question}
-              answer={item.answer}
-              isOpen={!!openItems[item.id]}
-              toggleItem={() => toggleItem(item.id)}
-            />
+        <div className="space-y-8">
+          {faqData.map((item, index) => (
+            <div 
+              key={item.id} 
+              className={cn(
+                isVisible ? "animate-fade-in" : "opacity-0",
+                `delay-${index * 100}`
+              )}
+            >
+              <FAQItemComponent
+                id={item.id}
+                question={item.question}
+                answer={item.answer}
+                isOpen={!!openItems[item.id]}
+                toggleItem={() => toggleItem(item.id)}
+              />
+            </div>
           ))}
         </div>
       </div>
