@@ -1,70 +1,221 @@
 "use client";
 import Image from "next/image";
 import { ViewMoreButton } from "@/components/ui/view-more-button";
+import { motion, Variants } from "framer-motion";
+import { useState } from "react";
+
+// Define category type
+type CategorySize = "large" | "small";
+
+interface Category {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  size: CategorySize;
+}
+
+// Category data with descriptions
+const categories: Category[] = [
+	{
+		id: "garden-decors",
+		title: "Garden Decors",
+		description:
+			"Elevate your outdoor spaces with our handcrafted garden pottery pieces.",
+		image:
+			"/images/Leonardo_Phoenix_10_A_peaceful_whimsical_garden_scene_featurin_3.png",
+		size: "large",
+	},
+	{
+		id: "cookware",
+		title: "Cookware",
+		description:
+			"Durable, beautiful cookware crafted with traditional pottery techniques.",
+		image:
+			"/images/Leonardo_Phoenix_10_A_beautifully_styled_product_image_featuri_1.png",
+		size: "small",
+	},
+	{
+		id: "sacred-crafts",
+		title: "Sacred Crafts",
+		description:
+			"Spiritual and ceremonial pottery pieces for your sacred spaces.",
+		image:
+			"/images/Flux_Dev_A_serene_and_mystical_scene_showcasing_various_sacred_3.png",
+		size: "small",
+	},
+];
 
 export function BrowseCategory() {
-  return (
-    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
-      <div className="container mx-auto max-w-full">
-        {/* Header: Title and View More button */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">
-            Browse by Category
-          </h2>
-          <ViewMoreButton href="/categories" />
-        </div>
+	const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-        {/* Separator Line */}
-        <hr className="mb-8 md:mb-12 border-t border-[var(--border)]" />
+	// Container animation variants
+	const containerVariants = {
+		hidden: {},
+		visible: {
+			transition: {
+				staggerChildren: 0.2,
+			},
+		},
+	};
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Garden Decors - Large Card */}
-          <div className="relative rounded-lg overflow-hidden h-[498px]">
-            <div className="absolute inset-0 bg-gradient-to-t from-overlay via-overlay/40 to-transparent z-10"></div>
-            <Image 
-              src="/images/Leonardo_Phoenix_10_A_peaceful_whimsical_garden_scene_featurin_3.png"
-              alt="Garden Decors" 
-              fill
-              className="object-cover"
-            />
-            <h3 className="absolute bottom-6 left-6 text-3xl md:text-4xl font-bold text-white z-20 font-['Gill_Sans_MT']">
-              Garden Decors
-            </h3>
-          </div>
-          
-          {/* Right column with two cards */}
-          <div className="flex flex-col gap-4">
-            {/* Cookware */}
-            <div className="relative rounded-lg overflow-hidden h-[240px]">
-              <div className="absolute inset-0 bg-gradient-to-t from-overlay via-overlay/30 to-transparent z-10"></div>
-              <Image 
-                src="/images/Leonardo_Phoenix_10_A_beautifully_styled_product_image_featuri_1.png"
-                alt="Cookware" 
-                fill
-                className="object-cover"
-              />
-              <h3 className="absolute bottom-6 left-6 text-3xl md:text-4xl font-bold text-white z-20 font-['Gill_Sans_MT']">
-                Cookware
-              </h3>
-            </div>
-            
-            {/* Sacred Crafts */}
-            <div className="relative rounded-lg overflow-hidden h-[240px]">
-              <div className="absolute inset-0 bg-gradient-to-t from-overlay via-overlay/30 to-transparent z-10"></div>
-              <Image 
-                src="/images/Flux_Dev_A_serene_and_mystical_scene_showcasing_various_sacred_3.png"
-                alt="Sacred Crafts" 
-                fill
-                className="object-cover"
-              />
-              <h3 className="absolute bottom-6 left-6 text-3xl md:text-4xl font-bold text-white z-20 font-['Gill_Sans_MT']">
-                Sacred Crafts
-              </h3>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+	// Item animation variants
+	const itemVariants = {
+		hidden: { opacity: 0, y: 20 },
+		visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+	};
+
+	return (
+		<section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+			<div className="container mx-auto max-w-full">
+				{/* Header: Title and View More button */}
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6 }}
+					className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10"
+				>
+					<h2 className="text-4xl sm:text-5xl md:text-5xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">
+						Browse by Category
+					</h2>
+					<ViewMoreButton href="/categories" />
+				</motion.div>
+
+				{/* Separator Line */}
+				<motion.hr
+					initial={{ opacity: 0, scaleX: 0 }}
+					animate={{ opacity: 1, scaleX: 1 }}
+					transition={{ duration: 0.8, delay: 0.3 }}
+					className="mb-8 md:mb-12 border-t border-[var(--border)]"
+				/>
+
+				{/* Categories Grid */}
+				<motion.div
+					variants={containerVariants}
+					initial="hidden"
+					whileInView="visible"
+					viewport={{ once: true, margin: "-100px" }}
+					className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full"
+				>
+					{/* Garden Decors - Large Card */}
+					<motion.div 
+						variants={itemVariants}
+						className={`transition-all duration-500`}
+						style={{ 
+							flex: hoveredId === "garden-decors" ? "0 0 60%" : 
+								  (hoveredId === "cookware" || hoveredId === "sacred-crafts") ? "0 0 40%" : "0 0 50%",
+							transition: "flex 0.5s ease-in-out"
+						}}
+					>
+						<CategoryCard
+							category={categories[0]}
+							hoveredId={hoveredId}
+							setHoveredId={setHoveredId}
+						/>
+					</motion.div>
+
+					{/* Right column with two cards */}
+					<motion.div
+						variants={itemVariants}
+						className="flex flex-col gap-4 transition-all duration-500"
+						style={{ 
+							flex: (hoveredId === "cookware" || hoveredId === "sacred-crafts") ? "0 0 60%" : 
+								 hoveredId === "garden-decors" ? "0 0 40%" : "0 0 50%",
+							transition: "flex 0.5s ease-in-out"
+						}}
+					>
+						{/* Cookware */}
+						<CategoryCard
+							category={categories[1]}
+							hoveredId={hoveredId}
+							setHoveredId={setHoveredId}
+						/>
+
+						{/* Sacred Crafts */}
+						<CategoryCard
+							category={categories[2]}
+							hoveredId={hoveredId}
+							setHoveredId={setHoveredId}
+						/>
+					</motion.div>
+				</motion.div>
+			</div>
+		</section>
+	);
+}
+
+interface CategoryCardProps {
+	category: Category;
+	hoveredId: string | null;
+	setHoveredId: (id: string | null) => void;
+	variants?: Variants;
+}
+
+function CategoryCard({
+	category,
+	hoveredId,
+	setHoveredId,
+	variants,
+}: CategoryCardProps) {
+	const isHovered = hoveredId === category.id;
+	const isShrinking = hoveredId !== null && hoveredId !== category.id;
+	const isLarge = category.size === "large";
+
+	return (
+		<motion.div
+			variants={variants}
+			className={`relative rounded-lg overflow-hidden transition-all duration-500 cursor-pointer ${
+				isLarge ? "h-[498px]" : "h-[240px]"
+			} ${isHovered ? "z-10" : ""}`}
+			onMouseEnter={() => setHoveredId(category.id)}
+			onMouseLeave={() => setHoveredId(null)}
+			whileHover={{ scale: 1.05 }}
+			animate={{
+				scale: isHovered ? 1.05 : isShrinking ? 0.95 : 1
+			}}
+			transition={{ duration: 0.4 }}
+		>
+			{/* Gradient overlay */}
+			<div
+				className={`absolute inset-0 bg-gradient-to-t from-overlay via-overlay/40 to-transparent z-10 transition-opacity duration-300 ${
+					isHovered ? "opacity-80" : "opacity-100"
+				}`}
+			></div>
+
+			{/* Image */}
+			<Image
+				src={category.image}
+				alt={category.title}
+				fill
+				className={`object-cover transition-transform duration-500 ${
+					isHovered ? "scale-110" : "scale-100"
+				}`}
+			/>
+
+			{/* Content */}
+			<div className="absolute bottom-0 left-0 w-full p-6 z-20 transition-all duration-500">
+				<h3
+					className={`text-3xl md:text-4xl font-bold text-white font-['Gill_Sans_MT'] transition-transform duration-500 ${
+						isHovered ? "transform -translate-y-2" : ""
+					}`}
+				>
+					{category.title}
+				</h3>
+
+				{/* Description - appears on hover */}
+				<motion.div
+					initial={{ opacity: 0, height: 0 }}
+					animate={{
+						opacity: isHovered ? 1 : 0,
+						height: isHovered ? "auto" : 0,
+						marginTop: isHovered ? 10 : 0,
+					}}
+					transition={{ duration: 0.3 }}
+					className="text-white text-lg"
+				>
+					{category.description}
+				</motion.div>
+			</div>
+		</motion.div>
+	);
 }
