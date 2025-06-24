@@ -9,6 +9,7 @@ interface ViewMoreButtonProps {
   className?: string;
   arrowClassName?: string;
   textClassName?: string;
+  variant?: "default" | "accent";
 }
 
 export function ViewMoreButton({
@@ -17,27 +18,42 @@ export function ViewMoreButton({
   className,
   arrowClassName,
   textClassName,
+  variant = "default",
 }: ViewMoreButtonProps) {
   // Button content
   const buttonContent = (
     <>
-      <span className={cn("text-base md:text-xl lg:text-2xl font-medium text-muted-foreground whitespace-nowrap", textClassName)}>
+      <span
+        className={cn(
+          "text-base md:text-xl lg:text-2xl font-medium whitespace-nowrap transition-colors duration-300",
+          variant === "accent"
+            ? "text-accent-foreground"
+            : "text-muted-foreground",
+          textClassName
+        )}
+      >
         View More
       </span>
-      <div className={cn("w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary rounded-full flex items-center justify-center relative transition-transform duration-300 ease-in-out group-hover:scale-110", arrowClassName)}>
-        <svg 
-          width="18" 
-          height="18" 
-          viewBox="0 0 24 24" 
-          fill="none" 
+      <div
+        className={cn(
+          "w-10 h-10 sm:w-11 sm:h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center relative transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-md",
+          variant === "accent" ? "bg-accent" : "bg-primary",
+          arrowClassName
+        )}
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="transform rotate-[-35deg] sm:scale-100 scale-75"
+          className="transform rotate-[-35deg] sm:scale-110 scale-90 transition-transform duration-300 group-hover:scale-125"
         >
-          <path 
-            d="M5 12H19M19 12L12 5M19 12L12 19" 
-            stroke="white" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
+          <path
+            d="M5 12H19M19 12L12 5M19 12L12 19"
+            stroke="white"
+            strokeWidth="2.5"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
@@ -47,7 +63,7 @@ export function ViewMoreButton({
 
   // Base classes for the container
   const containerClasses = cn(
-    "flex items-center gap-2 sm:gap-3 md:gap-4 group cursor-pointer",
+    "flex items-center gap-3 sm:gap-4 md:gap-5 group cursor-pointer hover:opacity-90 transition-all duration-300",
     className
   );
 
