@@ -1,0 +1,85 @@
+/* Reusable animations for the MudPotter website */
+
+/* Fade in upward animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade out downward animation */
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in {
+  animation-name: fadeInUp;
+  animation-duration: 1.2s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+
+.animate-fade-out {
+  animation-name: fadeOutDown;
+  animation-duration: 1.2s;
+  animation-fill-mode: forwards;
+}
+
+/* Different animation speeds */
+.animation-slower {
+  animation-duration: 1.5s;
+}
+
+.animation-slow {
+  animation-duration: 1.2s;
+}
+
+.animation-normal {
+  animation-duration: 0.8s;
+}
+
+.animation-fast {
+  animation-duration: 0.5s;
+}
+
+/* Stagger delay utilities */
+.delay-0 {
+  animation-delay: 0ms;
+}
+
+.delay-50 {
+  animation-delay: 50ms;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
