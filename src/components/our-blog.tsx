@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ViewMoreButton } from "./ui/view-more-button";
 
 // Define the structure for a blog post item
 interface BlogPost {
@@ -79,31 +80,7 @@ export function OurBlog() {
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">
             Our Blog
           </h2>
-          <Link href="/blog" passHref>
-            <button
-              aria-label="View More Blog Posts"
-              className="flex items-center text-lg sm:text-xl md:text-2xl text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors group"
-            >
-              View More
-              <span className="ml-3 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full bg-[var(--primary)] text-[var(--white)] group-hover:opacity-90 transition-opacity">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                  stroke="currentColor"
-                  className="w-5 h-5 sm:w-6 sm:h-6 transform transition-transform group-hover:translate-x-1"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                  />
-                </svg>
-              </span>
-            </button>
-          </Link>
+          <ViewMoreButton href="/blog" />
         </div>
 
         {/* Separator Line */}

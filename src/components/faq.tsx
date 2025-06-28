@@ -14,7 +14,7 @@ interface FAQItemProps {
 
 const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen, toggleItem }) => {
   return (
-    <div className="rounded-lg border border-border bg-white" data-testid={`faq-item-${id}`}>
+    <div className="rounded-lg border border-border bg-white w-full overflow-hidden" data-testid={`faq-item-${id}`}>
       <h2>
         <button
           type="button"
@@ -22,12 +22,12 @@ const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen
           aria-expanded={isOpen}
           aria-controls={`faq-answer-${id}`}
           data-testid={`faq-question-${id}`}
-          className="flex items-center justify-between w-full p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors hover:bg-muted/30"
+          className="flex items-center justify-between w-full p-4 sm:p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors hover:bg-muted/30"
         >
-          <span className="text-2xl md:text-3xl font-semibold text-foreground">{question}</span>
-          <span className="ml-6 flex-shrink-0">
+          <span className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground pr-2 break-words">{question}</span>
+          <span className="ml-2 sm:ml-6 flex-shrink-0">
             <svg
-              className={`w-10 h-10 md:w-12 md:h-12 transform transition-transform duration-300 ease-in-out ${
+              className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 transform transition-transform duration-300 ease-in-out ${
                 isOpen ? "rotate-180" : "rotate-0"
               } text-primary`}
               xmlns="http://www.w3.org/2000/svg"
@@ -49,8 +49,8 @@ const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen
         }`}
         data-testid={`faq-answer-${id}`}
       >
-        <div className="p-6 pt-0 pb-8">
-          <p className="text-xl md:text-2xl text-muted-foreground">{answer}</p>
+        <div className="p-4 sm:p-6 pt-0 pb-6 sm:pb-8">
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground break-words">{answer}</p>
         </div>
       </div>
     </div>
@@ -84,6 +84,7 @@ export function FAQ() {
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const itemsContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -113,13 +114,13 @@ export function FAQ() {
   return (
     <section 
       ref={sectionRef} 
-      className="py-12 md:py-16 lg:py-20 px-8" 
+      className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-8 overflow-hidden" 
       data-testid="faq-section"
     >
       <div className="container mx-auto max-w-full">
-        <div className="flex flex-row justify-between items-start mb-8 md:mb-12">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-6 sm:mb-8 md:mb-12">
           <h2 className={cn(
-            "text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground",
+            "text-3xl sm:text-4xl lg:text-6xl font-bold text-foreground",
             isVisible ? "animate-fade-in-left" : "opacity-0"
           )}>
             FAQ
@@ -131,14 +132,17 @@ export function FAQ() {
             className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
           />
         </div>
-        <hr className={cn("border-t border-border mb-8 md:mb-12", isVisible ? "animate-fade-in" : "opacity-0")} />
-        <div className="space-y-8">
+        <hr className={cn("border-t border-border mb-6 sm:mb-8 md:mb-12", isVisible ? "animate-fade-in delay-200" : "opacity-0")} />
+        <div 
+          ref={itemsContainerRef}
+          className="space-y-4 sm:space-y-8"
+        >
           {faqData.map((item, index) => (
             <div 
-              key={item.id} 
+              key={item.id}
               className={cn(
                 isVisible ? "animate-fade-in" : "opacity-0",
-                `delay-${index * 100}`
+                `delay-${(index + 2) * 100}`
               )}
             >
               <FAQItemComponent
