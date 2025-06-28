@@ -125,7 +125,7 @@ export function OurBestSeller({ products }: OurBestSellerProps) {
           {displayProducts.map((product, index) => (
             <div 
               key={product.id} 
-              className={`flex flex-col gap-6 group cursor-pointer transition-all duration-500 ease-in-out hover:-translate-y-3 hover:shadow-xl rounded-lg ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}
+              className={`flex flex-col gap-6 group cursor-pointer transition-all duration-500 ease-in-out rounded-lg ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}
               style={{ 
                 animationDelay: `${200 + (index * 200)}ms` // Base delay + staggered delay
               }}
