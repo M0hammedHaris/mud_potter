@@ -14,7 +14,7 @@ interface FAQItemProps {
 
 const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen, toggleItem }) => {
   return (
-    <div className="rounded-lg border border-border" data-testid={`faq-item-${id}`}>
+    <div className="rounded-lg border border-border bg-white" data-testid={`faq-item-${id}`}>
       <h2>
         <button
           type="button"
@@ -24,10 +24,10 @@ const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen
           data-testid={`faq-question-${id}`}
           className="flex items-center justify-between w-full p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors hover:bg-muted/30"
         >
-          <span className="text-xl md:text-2xl font-semibold text-foreground">{question}</span>
+          <span className="text-2xl md:text-3xl font-semibold text-foreground">{question}</span>
           <span className="ml-6 flex-shrink-0">
             <svg
-              className={`w-8 h-8 md:w-10 md:h-10 transform transition-transform duration-300 ease-in-out ${
+              className={`w-10 h-10 md:w-12 md:h-12 transform transition-transform duration-300 ease-in-out ${
                 isOpen ? "rotate-180" : "rotate-0"
               } text-primary`}
               xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +50,7 @@ const FAQItemComponent: React.FC<FAQItemProps> = ({ id, question, answer, isOpen
         data-testid={`faq-answer-${id}`}
       >
         <div className="p-6 pt-0 pb-8">
-          <p className="text-lg md:text-xl text-muted-foreground">{answer}</p>
+          <p className="text-xl md:text-2xl text-muted-foreground">{answer}</p>
         </div>
       </div>
     </div>
@@ -116,21 +116,22 @@ export function FAQ() {
       className="py-12 md:py-16 lg:py-20 px-8" 
       data-testid="faq-section"
     >
-      <div className={cn(
-        "container mx-auto max-w-full",
-        isVisible ? "animate-fade-in" : "opacity-0"
-      )}>
+      <div className="container mx-auto max-w-full">
         <div className="flex flex-row justify-between items-start mb-8 md:mb-12">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground">
+          <h2 className={cn(
+            "text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground",
+            isVisible ? "animate-fade-in-left" : "opacity-0"
+          )}>
             FAQ
           </h2>
           <ViewMoreButton 
             href="/faq" 
             variant="accent"
-            arrowClassName="bg-primary md:w-16 md:h-16" 
+            arrowClassName="bg-primary md:w-16 md:h-16"
+            className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
           />
         </div>
-        <hr className="border-t border-border mb-8 md:mb-12" />
+        <hr className={cn("border-t border-border mb-8 md:mb-12", isVisible ? "animate-fade-in" : "opacity-0")} />
         <div className="space-y-8">
           {faqData.map((item, index) => (
             <div 
