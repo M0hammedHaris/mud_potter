@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ViewMoreButton } from "./ui/view-more-button";
+import { cn } from "@/lib/utils";
 
 // Define the structure for a blog post item
 interface BlogPost {
@@ -76,15 +77,23 @@ export function OurBlog() {
     >
       <div className="container mx-auto max-w-full">
         {/* Header: Title and View More button */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-6 sm:mb-8 md:mb-12">
+          <h2 className={cn(
+            "text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)] mb-4 sm:mb-0",
+            isVisible ? "animate-fade-in-left" : "opacity-0"
+          )}>
             Our Blog
           </h2>
-          <ViewMoreButton href="/blog" />
+          <ViewMoreButton 
+            href="/blog" 
+            className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
+          />
         </div>
 
         {/* Separator Line */}
-        <hr className="mb-8 md:mb-12 border-t border-[var(--border)]" />
+        <hr className={cn("mb-8 md:mb-12 border-t border-[var(--border)]", 
+            isVisible ? "animate-fade-in delay-200" : "opacity-0"
+        )} />
 
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">

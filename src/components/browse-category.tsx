@@ -2,7 +2,8 @@
 import Image from "next/image";
 import { ViewMoreButton } from "@/components/ui/view-more-button";
 import { motion, Variants } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 // Define category type
 type CategorySize = "large" | "small";
@@ -48,6 +49,8 @@ const categories: Category[] = [
 
 export function BrowseCategory() {
 	const [hoveredId, setHoveredId] = useState<string | null>(null);
+	const [isVisible, setIsVisible] = useState(false);
+	const sectionRef = useRef<HTMLElement>(null);
 
 	// Container animation variants
 	const containerVariants = {
@@ -70,29 +73,46 @@ export function BrowseCategory() {
 		visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
 	};
 
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setIsVisible(true);
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.1 }
+		);
+
+		if (sectionRef.current) {
+			observer.observe(sectionRef.current);
+		}
+
+		return () => observer.disconnect();
+	}, []);
+
 	return (
-		<section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+		<section ref={sectionRef} className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)] overflow-hidden">
 			<div className="container mx-auto max-w-full">
 				{/* Header: Title and View More button */}
-				<motion.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6 }}
-					className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10"
-				>
-					<h2 className="text-4xl sm:text-5xl md:text-5xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">
+				<div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-8 md:mb-10">
+					<h2 className={cn(
+						"text-4xl sm:text-5xl md:text-5xl font-bold text-[var(--foreground)] mb-4 sm:mb-0",
+						isVisible ? "animate-fade-in-left" : "opacity-0"
+					)}>
 						Browse by Category
 					</h2>
-					<ViewMoreButton href="/categories" className="text-lg" />
-				</motion.div>
+					<ViewMoreButton 
+						href="/categories" 
+						className={cn("text-lg", isVisible ? "animate-fade-in-right" : "opacity-0")}
+					/>
+				</div>
 
 				{/* Separator Line */}
-				<motion.hr
-					initial={{ opacity: 0, scaleX: 0 }}
-					animate={{ opacity: 1, scaleX: 1 }}
-					transition={{ duration: 0.8, delay: 0.3 }}
-					className="mb-8 md:mb-12 border-t border-[var(--border)]"
-				/>
+				<hr className={cn(
+					"mb-8 md:mb-12 border-t border-[var(--border)]",
+					isVisible ? "animate-fade-in delay-200" : "opacity-0"
+				)} />
 
 				{/* Categories Grid */}
 				<motion.div

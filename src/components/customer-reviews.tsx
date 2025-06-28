@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { cn } from "@/lib/utils";
 
 const StarIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -56,6 +57,26 @@ const CustomerReviews = () => {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleNextReview = () => {
     setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % mockReviews.length);
@@ -95,6 +116,7 @@ const CustomerReviews = () => {
 
   return (
     <section 
+      ref={sectionRef}
       aria-labelledby="customer-reviews-heading" 
       // Use min-h-screen for full viewport height, and ensure content is centered if it doesn't fill the screen.
       className="bg-[var(--review-section-bg)] py-16 px-4 sm:px-8 flex flex-col items-center justify-center min-h-screen overflow-hidden"
@@ -104,7 +126,10 @@ const CustomerReviews = () => {
         {/* Section heading first to ensure it's at the top of the visual structure */}
         <h2 
           id="customer-reviews-heading" 
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-[100px] xl:text-[120px] font-bold text-[var(--review-heading-text)] text-center mb-8 md:mb-12"
+          className={cn(
+            "text-4xl sm:text-5xl md:text-6xl lg:text-[100px] xl:text-[120px] font-bold text-[var(--review-heading-text)] text-center mb-8 md:mb-12",
+            isVisible ? "animate-fade-in-left" : "opacity-0"
+          )}
           style={{ fontFamily: "'Gill Sans MT', sans-serif" }}
         >
           What People Say

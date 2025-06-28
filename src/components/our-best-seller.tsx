@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ViewMoreButton } from "@/components/ui/view-more-button";
+import { cn } from "@/lib/utils";
 
 // Product interface for TypeScript type safety
 interface Product {
@@ -104,21 +105,23 @@ export function OurBestSeller({ products }: OurBestSellerProps) {
       {/* Animations are imported from /src/styles/animations.css */}
       <div className="container mx-auto max-w-full">
         {/* Header with Title and View More */}
-        <div 
-          className={`flex justify-between items-center mb-4 opacity-0 delay-50 ${
-            isVisible ? 'animate-fade-in' : 'animate-fade-out'
-          }`}
-        >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-['Gill_Sans_MT'] text-foreground">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-6 sm:mb-8 md:mb-12">
+          <h2 className={cn(
+            "text-3xl md:text-4xl lg:text-5xl font-bold font-['Gill_Sans_MT'] text-foreground",
+            isVisible ? "animate-fade-in-left" : "opacity-0"
+          )}>
             Our Best Seller
           </h2>
-          <ViewMoreButton href="/products/best-seller" />
+          <ViewMoreButton 
+            href="/products/best-seller" 
+            className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
+          />
         </div>
         
         {/* Separator Line */}
-        <hr className={`mb-8 md:mb-12 border-t border-[var(--border)] opacity-0 delay-200 ${
-            isVisible ? 'animate-fade-in' : 'animate-fade-out'
-          }`} />
+        <hr className={cn("mb-8 md:mb-12 border-t border-[var(--border)]", 
+            isVisible ? "animate-fade-in delay-200" : "opacity-0"
+        )} />
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
