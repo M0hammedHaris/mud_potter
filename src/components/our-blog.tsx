@@ -77,15 +77,16 @@ export function OurBlog() {
     >
       <div className="container mx-auto max-w-full">
         {/* Header: Title and View More button */}
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-6 sm:mb-8 md:mb-12">
+        <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 md:mb-12">
           <h2 className={cn(
-            "text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)] mb-4 sm:mb-0",
+            "text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--foreground)]",
             isVisible ? "animate-fade-in-left" : "opacity-0"
           )}>
             Our Blog
           </h2>
           <ViewMoreButton 
-            href="/blog" 
+            href="/blog"
+            textClassName="hidden sm:inline"
             className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
           />
         </div>

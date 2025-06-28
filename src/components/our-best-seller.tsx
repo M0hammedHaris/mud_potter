@@ -105,7 +105,7 @@ export function OurBestSeller({ products }: OurBestSellerProps) {
       {/* Animations are imported from /src/styles/animations.css */}
       <div className="container mx-auto max-w-full">
         {/* Header with Title and View More */}
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-6 sm:mb-8 md:mb-12">
+        <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 md:mb-12">
           <h2 className={cn(
             "text-3xl md:text-4xl lg:text-5xl font-bold font-['Gill_Sans_MT'] text-foreground",
             isVisible ? "animate-fade-in-left" : "opacity-0"
@@ -113,7 +113,8 @@ export function OurBestSeller({ products }: OurBestSellerProps) {
             Our Best Seller
           </h2>
           <ViewMoreButton 
-            href="/products/best-seller" 
+            href="/products/best-seller"
+            textClassName="hidden sm:inline" 
             className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
           />
         </div>

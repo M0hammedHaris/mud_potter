@@ -95,15 +95,16 @@ export function BrowseCategory() {
 		<section ref={sectionRef} className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)] overflow-hidden">
 			<div className="container mx-auto max-w-full">
 				{/* Header: Title and View More button */}
-				<div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-8 md:mb-10">
+				<div className="flex flex-row justify-between items-center mb-8 md:mb-10">
 					<h2 className={cn(
-						"text-4xl sm:text-5xl md:text-5xl font-bold text-[var(--foreground)] mb-4 sm:mb-0",
+						"text-4xl sm:text-5xl md:text-5xl font-bold text-[var(--foreground)]",
 						isVisible ? "animate-fade-in-left" : "opacity-0"
 					)}>
 						Browse by Category
 					</h2>
 					<ViewMoreButton 
 						href="/categories" 
+						textClassName="hidden sm:inline"
 						className={cn("text-lg", isVisible ? "animate-fade-in-right" : "opacity-0")}
 					/>
 				</div>

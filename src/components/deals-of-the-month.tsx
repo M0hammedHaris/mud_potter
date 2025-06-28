@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { ViewMoreButton } from "@/components/ui/view-more-button";
 import "../styles/animations.css";
 
 // Countdown timer interface
@@ -149,6 +151,26 @@ export function DealsOfTheMonth() {
       className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)] overflow-hidden"
     >
       <div className="container mx-auto max-w-full">
+        {/* Header: Title and View More button */}
+        <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 md:mb-12">
+          <h2 className={cn(
+            "text-3xl md:text-4xl lg:text-5xl font-bold font-['Gill_Sans_MT'] text-foreground",
+            isVisible ? "animate-fade-in-left" : "opacity-0"
+          )}>
+            Deals of the Month
+          </h2>
+          <ViewMoreButton 
+            href="/deals" 
+            textClassName="hidden sm:inline"
+            className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
+          />
+        </div>
+        
+        {/* Separator Line */}
+        <hr className={cn("mb-8 md:mb-12 border-t border-[var(--border)]", 
+            isVisible ? "animate-fade-in delay-200" : "opacity-0"
+        )} />
+        
         {/* Grid container for the deal images */}
         <motion.div 
           variants={containerVariants}

@@ -118,7 +118,7 @@ export function FAQ() {
       data-testid="faq-section"
     >
       <div className="container mx-auto max-w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:items-center mb-6 sm:mb-8 md:mb-12">
+        <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 md:mb-12">
           <h2 className={cn(
             "text-3xl sm:text-4xl lg:text-6xl font-bold text-foreground",
             isVisible ? "animate-fade-in-left" : "opacity-0"
@@ -129,6 +129,7 @@ export function FAQ() {
             href="/faq" 
             variant="accent"
             arrowClassName="bg-primary md:w-16 md:h-16"
+            textClassName="hidden sm:inline"
             className={cn(isVisible ? "animate-fade-in-right" : "opacity-0")}
           />
         </div>
