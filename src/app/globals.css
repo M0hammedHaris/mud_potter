@@ -64,6 +64,24 @@
   }
 }
 
+/* Word Appear Animation */
+@keyframes word-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-title .word {
+  display: inline-block;
+  opacity: 0;
+  animation: word-appear 0.5s ease-out forwards;
+}
+
 /* Reduced Motion Preferences */
 @media (prefers-reduced-motion: reduce) {
   .curtains-open .theatre-curtain-left,

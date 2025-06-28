@@ -175,18 +175,26 @@ export function Hero({ title, images }: HeroProps) {
           <div className="inline-block px-6 py-4 rounded-lg pointer-events-auto">
             <h1
               className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white max-w-xl leading-tight ${
-                animateTitle ? "text-animate-enter" : "text-animated"
+                animateTitle ? "animate-title" : "opacity-0"
               }`}
             >
-              {title}
+              {title.split(" ").map((word, index) => (
+                <span
+                  key={index}
+                  className="word"
+                  style={{ animationDelay: `${index * 0.2}s` }}
+                >
+                  {word}&nbsp;
+                </span>
+              ))}
             </h1>
           </div>
         </div>
 
         {/* Controls and navigation */}
-        <div className="px-6 pb-10 md:px-16 md:pb-20 flex flex-col items-center">
+        <div className="absolute bottom-10 w-full px-6 md:px-16">
           {/* Current slide indicator and navigation controls - aligned horizontally */}
-          <div className="flex items-center justify-between w-full mb-6 z-10 pointer-events-auto">
+          <div className="flex items-center justify-between w-full z-10 pointer-events-auto">
             {/* Slide indicator - left side */}
             <div className="flex items-center space-x-3 backdrop-blur-sm bg-overlay bg-opacity-20 px-4 py-2 rounded-full">
               <span className="text-white font-medium">
@@ -259,27 +267,27 @@ export function Hero({ title, images }: HeroProps) {
             </Button>
             </div>
           </div>
+        </div>
 
-          {/* Hidden Carousel - Keeps API functionality without visual thumbnails */}
-          <Carousel
-            opts={{ align: "start", loop: true }}
-            setApi={setApi}
-            className="w-0 h-0 overflow-hidden opacity-0 absolute pointer-events-none"
-          >
-            <CarouselContent>
-              {images.map((image, index) => (
+        {/* Hidden Carousel - Keeps API functionality without visual thumbnails */}
+        <Carousel
+          opts={{ align: "start", loop: true }}
+          setApi={setApi}
+          className="w-0 h-0 overflow-hidden opacity-0 absolute pointer-events-none"
+        >
+          <CarouselContent>
+            {images.map((image, index) => (
             <CarouselItem key={index}>
               {/* Empty item - just to maintain carousel functionality */}
               <div />
             </CarouselItem>
               ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
+          </CarouselContent>
+        </Carousel>
 
         {/* Mouse icon - hidden on mobile */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-[53px] h-[86px] border-2 border-white rounded-[40px] pointer-events-none hidden md:block">
-          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-1 h-6 bg-white rounded-full animate-scroll-down"></div>
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-[35px] h-[60px] border-2 border-white rounded-[40px] pointer-events-none hidden md:block">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-1 h-4 bg-white rounded-full animate-scroll-down"></div>
         </div>
       </div>
     </section>
