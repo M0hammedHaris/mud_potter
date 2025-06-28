@@ -60,9 +60,14 @@ export function BrowseCategory() {
 	};
 
 	// Item animation variants
-	const itemVariants = {
-		hidden: { opacity: 0, y: 20 },
-		visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+	const leftItemVariants = {
+		hidden: { opacity: 0, x: -50 },
+		visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
+	};
+
+	const rightItemVariants = {
+		hidden: { opacity: 0, x: 50 },
+		visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
 	};
 
 	return (
@@ -78,7 +83,7 @@ export function BrowseCategory() {
 					<h2 className="text-4xl sm:text-5xl md:text-5xl font-bold text-[var(--foreground)] mb-4 sm:mb-0">
 						Browse by Category
 					</h2>
-					<ViewMoreButton href="/categories" />
+					<ViewMoreButton href="/categories" className="text-lg" />
 				</motion.div>
 
 				{/* Separator Line */}
@@ -94,16 +99,16 @@ export function BrowseCategory() {
 					variants={containerVariants}
 					initial="hidden"
 					whileInView="visible"
-					viewport={{ once: true, margin: "-100px" }}
+					viewport={{ margin: "-100px" }}
 					className="flex flex-col lg:flex-row gap-4 lg:gap-6 w-full"
 				>
 					{/* Garden Decors - Large Card */}
 					<motion.div 
-						variants={itemVariants}
+						variants={leftItemVariants}
 						className={`transition-all duration-500`}
 						style={{ 
-							flex: hoveredId === "garden-decors" ? "0 0 60%" : 
-								  (hoveredId === "cookware" || hoveredId === "sacred-crafts") ? "0 0 40%" : "0 0 50%",
+							flex: hoveredId === "garden-decors" ? "2 1 0%" : 
+								  (hoveredId === "cookware" || hoveredId === "sacred-crafts") ? "1 1 0%" : "1.5 1 0%",
 							transition: "flex 0.5s ease-in-out"
 						}}
 					>
@@ -116,11 +121,11 @@ export function BrowseCategory() {
 
 					{/* Right column with two cards */}
 					<motion.div
-						variants={itemVariants}
+						variants={rightItemVariants}
 						className="flex flex-col gap-4 transition-all duration-500"
 						style={{ 
-							flex: (hoveredId === "cookware" || hoveredId === "sacred-crafts") ? "0 0 60%" : 
-								 hoveredId === "garden-decors" ? "0 0 40%" : "0 0 50%",
+							flex: (hoveredId === "cookware" || hoveredId === "sacred-crafts") ? "2 1 0%" : 
+								 hoveredId === "garden-decors" ? "1 1 0%" : "1.5 1 0%",
 							transition: "flex 0.5s ease-in-out"
 						}}
 					>
