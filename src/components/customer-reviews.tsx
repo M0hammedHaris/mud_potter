@@ -101,27 +101,36 @@ const CustomerReviews = () => {
     >
       <div className="max-w-6xl w-full flex flex-col items-center gap-8 md:gap-12 relative">
         
+        {/* Section heading first to ensure it's at the top of the visual structure */}
+        <h2 
+          id="customer-reviews-heading" 
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-[100px] xl:text-[120px] font-bold text-[var(--review-heading-text)] text-center mb-8 md:mb-12"
+          style={{ fontFamily: "'Gill Sans MT', sans-serif" }}
+        >
+          What People Say
+        </h2>
+        
         {/* Mobile Previous Button - Bottom Left */}
-        <div className="absolute left-4 bottom-4 block md:hidden z-20">
+        <div className="absolute left-4 bottom-4 block md:hidden z-10">
           <button 
             aria-label="Previous review" 
             onClick={handlePrevReview}
-            className="p-3 bg-[var(--review-nav-button-bg)]/70 backdrop-blur-sm rounded-full hover:bg-[var(--review-nav-button-bg)]/90 transition-all duration-200 shadow-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="p-3 bg-green-600/70 backdrop-blur-sm rounded-full hover:bg-green-600/90 transition-all duration-200 shadow-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-black">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-white">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
           </button>
         </div>
 
         {/* Desktop Previous Button */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block -ml-2 sm:-ml-4 md:-ml-6 lg:-ml-10 xl:-ml-16 z-20">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block -ml-2 sm:-ml-4 md:-ml-6 lg:-ml-10 xl:-ml-16 z-10">
           <button 
             aria-label="Previous review" 
             onClick={handlePrevReview}
-            className="p-3 bg-[var(--review-nav-button-bg)]/50 rounded-l-xl rounded-r-none hover:bg-[var(--review-nav-button-bg)]/75 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="p-3 bg-primary rounded-l-xl rounded-r-none hover:bg-opacity-80 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-10 text-black">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-10 text-white">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
           </button>
@@ -174,11 +183,11 @@ const CustomerReviews = () => {
         </div>
         
         {/* Mobile Next Button - Bottom Right */}
-        <div className="absolute right-4 bottom-4 block md:hidden z-20">
+        <div className="absolute right-4 bottom-4 block md:hidden z-10">
           <button 
             aria-label="Next review"
             onClick={handleNextReview}
-            className="p-3 bg-primary/70 backdrop-blur-sm rounded-full hover:bg-primary/90 transition-all duration-200 shadow-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
+            className="p-3 bg-green-600/70 backdrop-blur-sm rounded-full hover:bg-green-600/90 transition-all duration-200 shadow-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-white">
               <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -187,7 +196,7 @@ const CustomerReviews = () => {
         </div>
 
         {/* Desktop Next Button */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden md:block -mr-2 sm:-mr-4 md:-mr-6 lg:-mr-10 xl:-mr-16 z-20">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden md:block -mr-2 sm:-mr-4 md:-mr-6 lg:-mr-10 xl:-mr-16 z-10">
           <button 
             aria-label="Next review"
             onClick={handleNextReview}
@@ -198,14 +207,6 @@ const CustomerReviews = () => {
             </svg>
           </button>
         </div>
-
-        <h2 
-          id="customer-reviews-heading" 
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-[100px] xl:text-[120px] font-bold text-[var(--review-heading-text)] text-center mt-8 md:mt-12"
-          style={{ fontFamily: "'Gill Sans MT', sans-serif" }}
-        >
-          What People Say
-        </h2>
       </div>
     </section>
   );
