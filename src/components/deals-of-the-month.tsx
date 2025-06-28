@@ -29,7 +29,7 @@ const deals: Deal[] = [
 		description: "Beautifully crafted pottery for your garden.",
 		image:
 			"/images/Leonardo_Phoenix_10_A_serene_inviting_garden_scene_featuring_a_3.png",
-		size: "small",
+		size: "large",
 	},
 	{
 		id: "deal-2",
@@ -37,7 +37,7 @@ const deals: Deal[] = [
 		description: "Artistic pottery for your home decor.",
 		image:
 			"/images/Leonardo_Phoenix_10_I_want_a_visually_appealing_still_life_ima_2 (1).png",
-		size: "small",
+		size: "large",
 	},
 	{
 		id: "deal-3",
@@ -165,7 +165,7 @@ export function DealsOfTheMonth() {
               transition: "flex 0.5s ease-in-out"
             }}
           >
-            <DealCard deal={deals[0]} hoveredId={hoveredId} setHoveredId={setHoveredId} isAnimationEnabled={true} />
+            <DealCard deal={deals[0]} hoveredId={hoveredId} setHoveredId={setHoveredId} isAnimationEnabled={true} timeLeft={timeLeft} formatNumber={formatNumber} />
           </motion.div>
 
           {/* Second image */}
@@ -177,7 +177,7 @@ export function DealsOfTheMonth() {
               transition: "flex 0.5s ease-in-out"
             }}
           >
-            <DealCard deal={deals[1]} hoveredId={hoveredId} setHoveredId={setHoveredId} isAnimationEnabled={true} />
+            <DealCard deal={deals[1]} hoveredId={hoveredId} setHoveredId={setHoveredId} isAnimationEnabled={true} timeLeft={timeLeft} formatNumber={formatNumber} />
           </motion.div>
 
           {/* Third image with content */}
@@ -185,7 +185,7 @@ export function DealsOfTheMonth() {
             variants={itemVariants}
             className="transition-all duration-500"
             style={{
-              flex: "2 1 0%",
+              flex: hoveredId === deals[2].id ? "2 1 0%" : (hoveredId && hoveredId !== deals[2].id) ? "1 1 0%" : "1.5 1 0%",
               transition: "flex 0.5s ease-in-out"
             }}
           >
@@ -195,6 +195,7 @@ export function DealsOfTheMonth() {
               setHoveredId={setHoveredId}
               timeLeft={timeLeft}
               formatNumber={formatNumber}
+              isAnimationEnabled={true}
             />
           </motion.div>
         </motion.div>
@@ -219,7 +220,7 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
 
   return (
     <motion.div
-      className={`relative rounded-lg overflow-hidden transition-all duration-500 cursor-pointer h-[415px] md:h-[500px] lg:h-[600px] border-3 border-white`}
+      className={`relative rounded-lg overflow-hidden transition-all duration-500 cursor-pointer min-h-[450px] h-auto md:h-[500px] lg:h-[600px] border-3 border-white`}
       onMouseEnter={() => isAnimationEnabled && setHoveredId(deal.id)}
       onMouseLeave={() => isAnimationEnabled && setHoveredId(null)}
       whileHover={{ scale: 1.02 }}
@@ -244,34 +245,38 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
         loading="lazy"
       />
       <div className="absolute bottom-0 left-0 w-full p-6 z-20 transition-all duration-500">
-        <h3
-          className={`text-3xl md:text-4xl font-bold text-white font-['Gill_Sans_MT'] transition-transform duration-500 ${
-            isHovered ? "transform -translate-y-2" : ""
-          }`}
+        <motion.h3
+          initial={{ opacity: 0, y: 20 }}
+          animate={{
+            opacity: isHovered ? 1 : 0,
+            y: isHovered ? 0 : 20,
+          }}
+          transition={{ duration: 0.3 }}
+          className={`text-2xl sm:text-3xl md:text-4xl font-bold text-white font-['Gill_Sans_MT']`}
         >
           {deal.title}
-        </h3>
+        </motion.h3>
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{
-            opacity: isHovered || !isAnimationEnabled ? 1 : 0,
-            height: isHovered || !isAnimationEnabled ? "auto" : 0,
-            marginTop: isHovered || !isAnimationEnabled ? 10 : 0,
+            opacity: isHovered ? 1 : 0,
+            height: isHovered ? "auto" : 0,
+            marginTop: isHovered ? 10 : 0,
           }}
           transition={{ duration: 0.3 }}
-          className="text-white text-lg"
+          className="text-white text-sm sm:text-lg line-clamp-3 sm:line-clamp-none"
         >
           {deal.description}
         </motion.div>
 
-        {isLarge && (
+        {(isLarge || isHovered) && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: isHovered || !isAnimationEnabled ? 1 : 0 }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
           >
             <Button
-              className="w-[200px] h-[50px] bg-[--primary] hover:bg-[#018e01] text-white rounded-[30px] shadow-lg text-lg font-['Gill_Sans_MT'] mt-4"
+              className="w-[150px] sm:w-[200px] h-[40px] sm:h-[50px] bg-[--primary] hover:bg-[#018e01] text-white rounded-[30px] shadow-lg text-sm sm:text-lg font-['Gill_Sans_MT'] mt-4"
               aria-label="Shop the deals of the month"
             >
               Shop Now
@@ -295,55 +300,55 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
             </Button>
 
             {timeLeft && formatNumber && (
-              <div className="mt-8">
-                <p className="text-xl md:text-2xl text-white mb-3 font-['Gill_Sans_MT']">
+              <div className="mt-4 sm:mt-8">
+                <p className="text-lg sm:text-xl md:text-2xl text-white mb-2 sm:mb-3 font-['Gill_Sans_MT']">
                   Hurry, Before It&apos;s Too Late!
                 </p>
-                <div className="flex gap-3 md:gap-5">
+                <div className="flex flex-wrap gap-2 md:gap-5">
                   {/* Days */}
                   <div className="flex flex-col items-center">
-                    <div className="w-[55px] h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
-                      <span className="text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
+                    <div className="w-[45px] sm:w-[55px] h-[45px] sm:h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
+                      <span className="text-lg sm:text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                         {formatNumber(timeLeft.days)}
                       </span>
                     </div>
-                    <span className="text-base text-white mt-1.5">
+                    <span className="text-sm sm:text-base text-white mt-1.5">
                       Days
                     </span>
                   </div>
 
                   {/* Hours */}
                   <div className="flex flex-col items-center">
-                    <div className="w-[55px] h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
-                      <span className="text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
+                    <div className="w-[45px] sm:w-[55px] h-[45px] sm:h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
+                      <span className="text-lg sm:text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                         {formatNumber(timeLeft.hours)}
                       </span>
                     </div>
-                    <span className="text-base text-white mt-1.5">
+                    <span className="text-sm sm:text-base text-white mt-1.5">
                       Hr
                     </span>
                   </div>
 
                   {/* Minutes */}
                   <div className="flex flex-col items-center">
-                    <div className="w-[55px] h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
-                      <span className="text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
+                    <div className="w-[45px] sm:w-[55px] h-[45px] sm:h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
+                      <span className="text-lg sm:text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                         {formatNumber(timeLeft.minutes)}
                       </span>
                     </div>
-                    <span className="text-base text-white mt-1.5">
+                    <span className="text-sm sm:text-base text-white mt-1.5">
                       Mins
                     </span>
                   </div>
 
                   {/* Seconds */}
                   <div className="flex flex-col items-center">
-                    <div className="w-[55px] h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
-                      <span className="text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
+                    <div className="w-[45px] sm:w-[55px] h-[45px] sm:h-[55px] bg-white rounded-[10px] shadow-md flex items-center justify-center">
+                      <span className="text-lg sm:text-xl text-[#484848] font-['Digital_Numbers', 'Arial', 'sans-serif']">
                         {formatNumber(timeLeft.seconds)}
                       </span>
                     </div>
-                    <span className="text-base text-white mt-1.5">
+                    <span className="text-sm sm:text-base text-white mt-1.5">
                       Sec
                     </span>
                   </div>
