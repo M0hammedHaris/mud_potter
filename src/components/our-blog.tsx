@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -38,8 +39,40 @@ const blogPosts: BlogPost[] = [
 ];
 
 export function OurBlog() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          // Optional: unobserve after animation triggers to prevent re-triggering
+          // observer.unobserve(entry.target);
+        }
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of the element is visible
+      }
+    );
+
+    const currentSection = sectionRef.current;
+    if (currentSection) {
+      observer.observe(currentSection);
+    }
+
+    return () => {
+      if (currentSection) {
+        observer.unobserve(currentSection);
+      }
+    };
+  }, []);
+
   return (
-    <section className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]">
+    <section
+      ref={sectionRef}
+      className="py-12 md:py-16 lg:py-20 px-8 bg-[var(--background)]"
+    >
       <div className="container mx-auto max-w-full">
         {/* Header: Title and View More button */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-10">
@@ -47,22 +80,26 @@ export function OurBlog() {
             Our Blog
           </h2>
           <Link href="/blog" passHref>
-            <button 
+            <button
               aria-label="View More Blog Posts"
               className="flex items-center text-lg sm:text-xl md:text-2xl text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors group"
             >
               View More
               <span className="ml-3 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full bg-[var(--primary)] text-[var(--white)] group-hover:opacity-90 transition-opacity">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  strokeWidth={2.5} 
-                  stroke="currentColor" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
                   className="w-5 h-5 sm:w-6 sm:h-6 transform transition-transform group-hover:translate-x-1"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                  />
                 </svg>
               </span>
             </button>
@@ -74,10 +111,23 @@ export function OurBlog() {
 
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {blogPosts.map((post) => (
+          {blogPosts.map((post, index) => (
             <Link key={post.id} href={post.link} passHref>
-              <div className="group block bg-[var(--card)] rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-                <div className="relative w-full aspect-[4/3]"> {/* Adjusted aspect ratio for better display */}
+              <div
+                className={`group block bg-[var(--card)] rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden ${
+                  isVisible
+                    ? index === 0
+                      ? "animate-fade-in-left"
+                      : "animate-fade-in-right"
+                    : "opacity-0"
+                }`}
+                style={{
+                  animationDelay: `${200 + index * 200}ms`,
+                }}
+              >
+                <div className="relative w-full aspect-[4/3]">
+                  {" "}
+                  {/* Adjusted aspect ratio for better display */}
                   <Image
                     src={post.imageUrl}
                     alt={post.altText}
@@ -91,7 +141,8 @@ export function OurBlog() {
                     {post.title}
                   </h3>
                   <p className="text-sm text-[var(--muted-foreground)] mb-3">
-                    Discover the latest trends and insights in the world of pottery and ceramics.
+                    Discover the latest trends and insights in the world of
+                    pottery and ceramics.
                   </p>
                   <span className="text-sm font-medium text-[var(--primary)] group-hover:underline">
                     Read More &rarr;

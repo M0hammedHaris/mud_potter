@@ -83,3 +83,41 @@
 .delay-500 {
   animation-delay: 500ms;
 }
+
+/* Fade in from left */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Fade in from right */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-left {
+  animation-name: fadeInLeft;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-right {
+  animation-name: fadeInRight;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
