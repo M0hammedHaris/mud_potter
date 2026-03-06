@@ -118,9 +118,8 @@ export function OurBlog() {
                   <Image
                     src={post.imageUrl}
                     alt={post.altText}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-t-lg group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-4 md:p-6">

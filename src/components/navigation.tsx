@@ -2,19 +2,21 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import "./navigation.css";
 
 export function Navigation() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(0);
     const [activeSearch, setActiveSearch] = useState(false);
+    const pathname = usePathname();
 
     // Navigation items data
     const navItems = [
-        { label: "Home", isActive: true },
-        { label: "Shop", isActive: false },
-        { label: "About", isActive: false }
+        { label: "Home", href: "/" },
+        { label: "Shop", href: "/shop" },
+        { label: "About", href: "/about" },
     ];
 
     // Close menu when ESC key is pressed
@@ -84,25 +86,34 @@ export function Navigation() {
                 {/* Desktop navigation */}
                 <div className="hidden md:flex items-center gap-4" style={{ width: "auto", height: "36px" }}>
                     {/* Navigation Items */}
-                    {navItems.map((item, index) => (
-                        <Button 
+                    {navItems.map((item) => (
+                        <Link
                             key={item.label}
-                            variant="ghost" 
-                            className={`flex justify-center items-center px-4 py-1 w-[90px] h-[36px] text-[16px] font-semibold transition-all ${
-                                index === activeIndex 
-                                ? "bg-secondary rounded-[18px] text-primary" 
-                                : "bg-transparent text-white/80 hover:bg-white/30 hover:rounded-[18px]"
+                            href={item.href}
+                            className={`flex justify-center items-center px-4 py-1 w-[90px] h-[36px] text-[16px] font-semibold transition-all rounded-[18px] ${
+                                pathname === item.href
+                                ? "bg-secondary text-primary" 
+                                : "bg-transparent text-white/80 hover:bg-white/30"
                             }`}
-                            onClick={() => setActiveIndex(index)}
                         >
                             {item.label}
-                        </Button>
+                        </Link>
                     ))}
                 </div>
 
-                <div className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-3xl font-bold text-white">LOGO</div>
+                <div className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-3xl font-bold text-white">
+                    <Link href="/">LOGO</Link>
+                </div>
                 
                 <div className="flex items-center space-x-4">
+                    {/* Cart Icon */}
+                    <Link href="/cart" aria-label="Shopping cart" className="relative">
+                        <div className="w-10 h-10 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-white">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                            </svg>
+                        </div>
+                    </Link>
                     <div className="relative">
                         <div className={`flex items-center transition-all duration-500 ease-in-out ${
                             activeSearch 
@@ -161,24 +172,20 @@ export function Navigation() {
                 
                 {/* Navigation links */}
                 <div className="flex flex-col items-center gap-6 p-4 mt-6">
-                    {navItems.map((item, index) => (
-                        <Button 
+                    {navItems.map((item) => (
+                        <Link
                             key={item.label}
-                            variant="ghost" 
+                            href={item.href}
                             className={`flex justify-center items-center px-4 py-2 w-full h-[48px] rounded-[24px] text-[18px] font-semibold transition-all ${
-                                index === activeIndex 
+                                pathname === item.href
                                 ? "bg-secondary text-primary" 
                                 : "bg-white/20 text-white/80 hover:bg-white/30"
                             }`}
-                            onClick={() => {
-                                setActiveIndex(index);
-                                // Close the menu when a navigation item is clicked
-                                setIsMobileMenuOpen(false);
-                            }}
+                            onClick={() => setIsMobileMenuOpen(false)}
                         >
                             {item.label}
                             <span className="ml-2 opacity-70">→</span>
-                        </Button>
+                        </Link>
                     ))}
                 </div>
                 
