@@ -37,7 +37,9 @@ export function OurBestSeller({ products: propProducts }: OurBestSellerProps) {
           // Fall back to first 3 products if no best-sellers are flagged
           setFetchedProducts(bestSellers.length > 0 ? bestSellers : data.slice(0, 3));
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.error("Failed to load best-seller products:", err);
+        });
     }
   }, [propProducts]);
 

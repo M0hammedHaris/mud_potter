@@ -59,7 +59,9 @@ export function DealsOfTheMonth() {
           });
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to load deals:", err);
+      });
   }, []);
 
   // Intersection Observer for animations

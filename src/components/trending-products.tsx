@@ -35,7 +35,9 @@ export function TrendingProducts({ products: propProducts }: TrendingProductsPro
           // Fall back to last 3 products if none are flagged as trending
           setFetchedProducts(trending.length > 0 ? trending : data.slice(-3));
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.error("Failed to load trending products:", err);
+        });
     }
   }, [propProducts]);
 
