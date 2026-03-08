@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { ViewMoreButton } from "@/components/ui/view-more-button";
 import { motion, Variants } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
@@ -188,6 +189,7 @@ function CategoryCard({
 	const isLarge = category.size === "large";
 
 	return (
+		<Link href={`/shop?category=${encodeURIComponent(category.title)}`}>
 		<motion.div
 			variants={variants}
 			className={`relative rounded-lg overflow-hidden transition-all duration-500 cursor-pointer ${
@@ -243,5 +245,6 @@ function CategoryCard({
 				</motion.div>
 			</div>
 		</motion.div>
+		</Link>
 	);
 }

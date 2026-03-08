@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -21,38 +22,14 @@ interface Deal {
 	title: string;
 	description: string;
 	image: string;
-	size: "large" | "small";
+	linkUrl: string;
+	linkLabel: string;
+	expiresAt: string;
 }
-
-const deals: Deal[] = [
-	{
-		id: "deal-1",
-		title: "Garden Pottery",
-		description: "Beautifully crafted pottery for your garden.",
-		image:
-			"/images/Leonardo_Phoenix_10_A_serene_inviting_garden_scene_featuring_a_3.png",
-		size: "large",
-	},
-	{
-		id: "deal-2",
-		title: "Still Life Pottery",
-		description: "Artistic pottery for your home decor.",
-		image:
-			"/images/Leonardo_Phoenix_10_I_want_a_visually_appealing_still_life_ima_2 (1).png",
-		size: "large",
-	},
-	{
-		id: "deal-3",
-		title: "Deals Of The Month",
-		description:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Scelerisque duis ultrices sollicitudin aliquam sem. Scelerisque duis ultrices sollicitudin",
-		image: "/images/ceramic-pottery-tools-still-life.png",
-		size: "large",
-	},
-];
 
 export function DealsOfTheMonth() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [deals, setDeals] = useState<Deal[]>([]);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 2,
     hours: 6,
@@ -63,6 +40,29 @@ export function DealsOfTheMonth() {
   // Animation states
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Fetch deals from API
+  useEffect(() => {
+    fetch("/api/deals")
+      .then((r) => r.json())
+      .then((data: Deal[]) => {
+        setDeals(data);
+        // Set countdown from first deal's expiresAt
+        if (data.length > 0 && data[0].expiresAt) {
+          const diff = Math.max(0, new Date(data[0].expiresAt).getTime() - Date.now());
+          const totalSeconds = Math.floor(diff / 1000);
+          setTimeLeft({
+            days: Math.floor(totalSeconds / 86400),
+            hours: Math.floor((totalSeconds % 86400) / 3600),
+            minutes: Math.floor((totalSeconds % 3600) / 60),
+            seconds: totalSeconds % 60,
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load deals:", err);
+      });
+  }, []);
 
   // Intersection Observer for animations
   useEffect(() => {
@@ -178,48 +178,26 @@ export function DealsOfTheMonth() {
           animate={isVisible ? "visible" : "hidden"}
           className="flex flex-col lg:flex-row gap-4 lg:gap-8"
         >
-          {/* First image */}
-          <motion.div
-            variants={itemVariants}
-            className="transition-all duration-500"
-            style={{
-              flex: hoveredId === deals[0].id ? "2 1 0%" : (hoveredId && hoveredId !== deals[0].id) ? "1 1 0%" : "1.5 1 0%",
-              transition: "flex 0.5s ease-in-out"
-            }}
-          >
-            <DealCard deal={deals[0]} hoveredId={hoveredId} setHoveredId={setHoveredId} isAnimationEnabled={true} timeLeft={timeLeft} formatNumber={formatNumber} />
-          </motion.div>
-
-          {/* Second image */}
-          <motion.div
-            variants={itemVariants}
-            className="transition-all duration-500"
-            style={{
-              flex: hoveredId === deals[1].id ? "2 1 0%" : (hoveredId && hoveredId !== deals[1].id) ? "1 1 0%" : "1.5 1 0%",
-              transition: "flex 0.5s ease-in-out"
-            }}
-          >
-            <DealCard deal={deals[1]} hoveredId={hoveredId} setHoveredId={setHoveredId} isAnimationEnabled={true} timeLeft={timeLeft} formatNumber={formatNumber} />
-          </motion.div>
-
-          {/* Third image with content */}
-          <motion.div
-            variants={itemVariants}
-            className="transition-all duration-500"
-            style={{
-              flex: hoveredId === deals[2].id ? "2 1 0%" : (hoveredId && hoveredId !== deals[2].id) ? "1 1 0%" : "1.5 1 0%",
-              transition: "flex 0.5s ease-in-out"
-            }}
-          >
-            <DealCard 
-              deal={deals[2]} 
-              hoveredId={hoveredId} 
-              setHoveredId={setHoveredId}
-              timeLeft={timeLeft}
-              formatNumber={formatNumber}
-              isAnimationEnabled={true}
-            />
-          </motion.div>
+          {deals.map((deal, index) => (
+            <motion.div
+              key={deal.id}
+              variants={itemVariants}
+              className="transition-all duration-500"
+              style={{
+                flex: hoveredId === deal.id ? "2 1 0%" : (hoveredId && hoveredId !== deal.id) ? "1 1 0%" : "1.5 1 0%",
+                transition: "flex 0.5s ease-in-out"
+              }}
+            >
+              <DealCard
+                deal={deal}
+                hoveredId={hoveredId}
+                setHoveredId={setHoveredId}
+                isAnimationEnabled={true}
+                timeLeft={index === deals.length - 1 ? timeLeft : undefined}
+                formatNumber={index === deals.length - 1 ? formatNumber : undefined}
+              />
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
@@ -238,7 +216,6 @@ interface DealCardProps {
 function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAnimationEnabled = false }: DealCardProps) {
   const isHovered = hoveredId === deal.id;
   const isShrinking = hoveredId !== null && hoveredId !== deal.id;
-  const isLarge = deal.size === 'large';
 
   return (
     <motion.div
@@ -291,17 +268,18 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
           {deal.description}
         </motion.div>
 
-        {(isLarge || isHovered) && (
+        {isHovered && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
           >
+            <Link href={deal.linkUrl}>
             <Button
               className="w-[150px] sm:w-[200px] h-[40px] sm:h-[50px] bg-[--primary] hover:bg-[#018e01] text-white rounded-[30px] shadow-lg text-sm sm:text-lg font-['Gill_Sans_MT'] mt-4"
-              aria-label="Shop the deals of the month"
+              aria-label={deal.linkLabel}
             >
-              Shop Now
+              {deal.linkLabel}
               <span className="ml-4 inline-block">
                 <svg
                   width="16"
@@ -320,6 +298,7 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
                 </svg>
               </span>
             </Button>
+            </Link>
 
             {timeLeft && formatNumber && (
               <div className="mt-4 sm:mt-8">
