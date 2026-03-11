@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { cn } from "@/lib/utils";
@@ -23,12 +24,27 @@ const products = [
 
 const sortOptions = ["Featured", "Price: Low to High", "Price: High to Low", "Best Rated", "Most Reviewed"];
 
-export default function ShopPage() {
-  const [activeCategory, setActiveCategory] = useState("All");
+function ShopContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+
+  const [activeCategory, setActiveCategory] = useState(() => {
+    if (categoryParam && categories.includes(categoryParam)) return categoryParam;
+    return "All";
+  });
   const [sortBy, setSortBy] = useState("Featured");
   const [searchQuery, setSearchQuery] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Sync active category when URL param changes
+  useEffect(() => {
+    if (categoryParam && categories.includes(categoryParam)) {
+      setActiveCategory(categoryParam);
+    } else if (!categoryParam) {
+      setActiveCategory("All");
+    }
+  }, [categoryParam]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -51,28 +67,7 @@ export default function ShopPage() {
     });
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <Navigation />
-
-      {/* Hero Banner */}
-      <div className="relative h-[40vh] min-h-[280px] bg-[#111] overflow-hidden">
-        <Image
-          src="/images/close-up-hands-working-pottery.png"
-          alt="Shop banner"
-          fill
-          sizes="100vw"
-          className="object-cover brightness-50"
-          priority
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4 pt-20">
-          <h1 className="text-4xl md:text-6xl font-bold font-['Gill_Sans_MT'] mb-4">Our Shop</h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-xl">
-            Discover handcrafted pottery made with love and tradition
-          </p>
-        </div>
-      </div>
-
-      <div ref={sectionRef} className="container mx-auto px-4 md:px-8 py-12 max-w-7xl">
+    <div ref={sectionRef} className="container mx-auto px-4 md:px-8 py-12 max-w-7xl">
         {/* Filters Bar */}
         <div className={cn("flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-10", isVisible ? "animate-fade-in" : "opacity-0")}>
           {/* Search */}
@@ -174,7 +169,36 @@ export default function ShopPage() {
             ))}
           </div>
         )}
+    </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <div className="min-h-screen bg-[var(--background)]">
+      <Navigation />
+
+      {/* Hero Banner */}
+      <div className="relative h-[40vh] min-h-[280px] bg-[#111] overflow-hidden">
+        <Image
+          src="/images/close-up-hands-working-pottery.png"
+          alt="Shop banner"
+          fill
+          sizes="100vw"
+          className="object-cover brightness-50"
+          priority
+        />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4 pt-20">
+          <h1 className="text-4xl md:text-6xl font-bold font-['Gill_Sans_MT'] mb-4">Our Shop</h1>
+          <p className="text-lg md:text-xl text-white/80 max-w-xl">
+            Discover handcrafted pottery made with love and tradition
+          </p>
+        </div>
       </div>
+
+      <Suspense fallback={<div className="container mx-auto px-4 py-12 text-center text-gray-400">Loading products…</div>}>
+        <ShopContent />
+      </Suspense>
 
       <Footer />
     </div>

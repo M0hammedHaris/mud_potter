@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ViewMoreButton } from "@/components/ui/view-more-button";
 import { cn } from "@/lib/utils";
 
@@ -18,38 +19,32 @@ interface OurBestSellerProps {
   products?: Product[];
 }
 
-export function OurBestSeller({ products }: OurBestSellerProps) {
+export function OurBestSeller({ products: propProducts }: OurBestSellerProps) {
   // State to track which elements are in viewport for animations
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  
-  // Default products if none are provided
-  const defaultProducts: Product[] = [
-    {
-      id: "1",
-      title: "Mud Pot",
-      image: "/images/Leonardo_Phoenix_10_I_want_a_highly_detailed_and_colorful_illu_0.png",
-      hoverImage: "/images/ceramic-pottery-tools-still-life.png",
-      price: 1200,
-    },
-    {
-      id: "2",
-      title: "Mud Cooker",
-      image: "/images/Leonardo_Phoenix_10_A_beautifully_styled_highquality_image_of_0.png",
-      hoverImage: "/images/kitchen-utensils-arrangement-top-view.png",
-      price: 1200,
-    },
-    {
-      id: "3",
-      title: "Mud Pot",
-      image: "/images/Leonardo_Phoenix_10_I_want_a_highly_detailed_and_colorful_illu_2.png",
-      hoverImage: "/images/close-up-hands-working-pottery.png",
-      price: 1200,
-    }
-  ];
+  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]);
 
-  // Use provided products or default to the sample data
-  const displayProducts = products || defaultProducts;
+  // Fetch best-seller products from API if not provided via props
+  useEffect(() => {
+    if (!propProducts) {
+      fetch("/api/products")
+        .then((r) => r.json())
+        .then((data: (Product & { isBestSeller?: boolean })[]) => {
+          const bestSellers = data
+            .filter((p) => p.isBestSeller)
+            .slice(0, 3);
+          // Fall back to first 3 products if no best-sellers are flagged
+          setFetchedProducts(bestSellers.length > 0 ? bestSellers : data.slice(0, 3));
+        })
+        .catch((err) => {
+          console.error("Failed to load best-seller products:", err);
+        });
+    }
+  }, [propProducts]);
+
+  // Use provided products or fetched data
+  const displayProducts = propProducts ?? fetchedProducts;
   
   // Effect to handle scroll detection using Intersection Observer
   useEffect(() => {
@@ -127,8 +122,9 @@ export function OurBestSeller({ products }: OurBestSellerProps) {
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {displayProducts.map((product, index) => (
-            <div 
-              key={product.id} 
+            <Link
+              key={product.id}
+              href={`/products/${product.id}`}
               className={`flex flex-col gap-6 group cursor-pointer transition-all duration-500 ease-in-out rounded-lg ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}
               style={{ 
                 animationDelay: `${200 + (index * 200)}ms` // Base delay + staggered delay
@@ -220,7 +216,7 @@ export function OurBestSeller({ products }: OurBestSellerProps) {
                   </svg>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
