@@ -36,6 +36,7 @@ export default function CheckoutPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [stepErrorMessage, setStepErrorMessage] = useState<string | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,15 +52,57 @@ export default function CheckoutPage() {
   const shipping = subtotal > 2000 ? 0 : 150;
   const total = subtotal + shipping;
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<CheckoutFormData>({
+  const { register, handleSubmit, watch, trigger, formState: { errors } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: { paymentMethod: "cod" },
   });
 
   const paymentMethod = watch("paymentMethod");
 
+  const renderStepError = () => {
+    if (!stepErrorMessage) return null;
+
+    return (
+      <div className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+        {stepErrorMessage}
+      </div>
+    );
+  };
+
+  const validateAndContinue = async (nextStep: number) => {
+    const fieldsByStep: Record<number, Array<keyof CheckoutFormData>> = {
+      0: ["firstName", "lastName", "email", "phone", "address", "city", "state", "pincode"],
+      1: ["paymentMethod"],
+      2: [],
+    };
+
+    const isStepValid = await trigger(fieldsByStep[currentStep], { shouldFocus: true });
+
+    if (!isStepValid) {
+      setStepErrorMessage(
+        currentStep === 0
+          ? "Please complete the required shipping details before continuing."
+          : "Please choose a payment method before continuing."
+      );
+      return;
+    }
+
+    setStepErrorMessage(null);
+    setCurrentStep(nextStep);
+  };
+
   const onSubmit = () => {
+    setStepErrorMessage(null);
     setIsSubmitted(true);
+  };
+
+  const onInvalidSubmit = () => {
+    setStepErrorMessage("Please review the highlighted details before placing your order.");
+  };
+
+  const goToStep = (step: number) => {
+    setStepErrorMessage(null);
+    setCurrentStep(step);
   };
 
   if (isSubmitted) {
@@ -120,7 +163,7 @@ export default function CheckoutPage() {
           ))}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Form */}
             <div className="lg:col-span-2">
@@ -164,11 +207,12 @@ export default function CheckoutPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(1)}
+                    onClick={() => validateAndContinue(1)}
                     className="mt-8 w-full bg-[var(--primary)] text-white py-4 px-6 rounded-full font-semibold hover:bg-[var(--primary)]/90 transition-all hover:shadow-lg"
                   >
                     Continue to Payment →
                   </button>
+                  {renderStepError()}
                 </div>
               )}
 
@@ -202,13 +246,14 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex gap-4 mt-8">
-                    <button type="button" onClick={() => setCurrentStep(0)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
+                    <button type="button" onClick={() => goToStep(0)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
                       ← Back
                     </button>
-                    <button type="button" onClick={() => setCurrentStep(2)} className="flex-1 bg-[var(--primary)] text-white py-4 px-6 rounded-full font-semibold hover:bg-[var(--primary)]/90 transition-all hover:shadow-lg">
+                    <button type="button" onClick={() => validateAndContinue(2)} className="flex-1 bg-[var(--primary)] text-white py-4 px-6 rounded-full font-semibold hover:bg-[var(--primary)]/90 transition-all hover:shadow-lg">
                       Review Order →
                     </button>
                   </div>
+                  {renderStepError()}
                 </div>
               )}
 
@@ -230,13 +275,14 @@ export default function CheckoutPage() {
                     ))}
                   </div>
                   <div className="flex gap-4">
-                    <button type="button" onClick={() => setCurrentStep(1)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
+                    <button type="button" onClick={() => goToStep(1)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
                       ← Back
                     </button>
                     <button type="submit" className="flex-1 bg-[var(--primary)] text-white py-4 px-6 rounded-full font-semibold hover:bg-[var(--primary)]/90 transition-all hover:shadow-lg">
                       Place Order ₹{total.toLocaleString()}
                     </button>
                   </div>
+                  {renderStepError()}
                 </div>
               )}
             </div>
