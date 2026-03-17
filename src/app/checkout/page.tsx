@@ -31,6 +31,13 @@ const cartItems = [
 ];
 
 const steps = ["Shipping", "Payment", "Review"];
+const fieldsByStep: Record<number, Array<keyof CheckoutFormData>> = {
+  0: ["firstName", "lastName", "email", "phone", "address", "city", "state", "pincode"],
+  1: ["paymentMethod"],
+  2: [],
+};
+type CheckoutStep = keyof typeof fieldsByStep;
+type CheckoutBackStep = Exclude<CheckoutStep, 2>;
 
 export default function CheckoutPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -69,14 +76,9 @@ export default function CheckoutPage() {
     );
   };
 
-  const validateAndContinue = async (nextStep: number) => {
-    const fieldsByStep: Record<number, Array<keyof CheckoutFormData>> = {
-      0: ["firstName", "lastName", "email", "phone", "address", "city", "state", "pincode"],
-      1: ["paymentMethod"],
-      2: [],
-    };
-
-    const isStepValid = await trigger(fieldsByStep[currentStep], { shouldFocus: true });
+  const validateAndContinue = async (targetStep: number) => {
+    const currentStepFields = fieldsByStep[currentStep];
+    const isStepValid = await trigger(currentStepFields, { shouldFocus: true });
 
     if (!isStepValid) {
       setStepErrorMessage(
@@ -88,7 +90,7 @@ export default function CheckoutPage() {
     }
 
     setStepErrorMessage(null);
-    setCurrentStep(nextStep);
+    setCurrentStep(targetStep);
   };
 
   const onSubmit = () => {
@@ -100,7 +102,7 @@ export default function CheckoutPage() {
     setStepErrorMessage("Please review the highlighted details before placing your order.");
   };
 
-  const goToStep = (step: number) => {
+  const goBackToStep = (step: CheckoutBackStep) => {
     setStepErrorMessage(null);
     setCurrentStep(step);
   };
@@ -246,7 +248,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex gap-4 mt-8">
-                    <button type="button" onClick={() => goToStep(0)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
+                    <button type="button" onClick={() => goBackToStep(0)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
                       ← Back
                     </button>
                     <button type="button" onClick={() => validateAndContinue(2)} className="flex-1 bg-[var(--primary)] text-white py-4 px-6 rounded-full font-semibold hover:bg-[var(--primary)]/90 transition-all hover:shadow-lg">
@@ -275,7 +277,7 @@ export default function CheckoutPage() {
                     ))}
                   </div>
                   <div className="flex gap-4">
-                    <button type="button" onClick={() => goToStep(1)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
+                    <button type="button" onClick={() => goBackToStep(1)} className="flex-1 border border-[var(--border)] text-[var(--foreground)] py-4 px-6 rounded-full font-semibold hover:bg-[var(--accent)] transition-all">
                       ← Back
                     </button>
                     <button type="submit" className="flex-1 bg-[var(--primary)] text-white py-4 px-6 rounded-full font-semibold hover:bg-[var(--primary)]/90 transition-all hover:shadow-lg">
