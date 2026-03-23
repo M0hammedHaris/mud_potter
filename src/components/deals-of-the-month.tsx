@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -27,15 +27,22 @@ interface Deal {
 	expiresAt: string;
 }
 
+function calcTimeLeft(expiresAt: string): TimeLeft {
+  const diff = Math.max(0, new Date(expiresAt).getTime() - Date.now());
+  const totalSeconds = Math.floor(diff / 1000);
+  return {
+    days: Math.floor(totalSeconds / 86400),
+    hours: Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+  };
+}
+
 export function DealsOfTheMonth() {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 2,
-    hours: 6,
-    minutes: 5,
-    seconds: 30,
-  });
+  // Per-deal timers keyed by deal id
+  const [timers, setTimers] = useState<Record<string, TimeLeft>>({});
   
   // Animation states
   const [isVisible, setIsVisible] = useState(false);
@@ -47,16 +54,17 @@ export function DealsOfTheMonth() {
       .then((r) => r.json())
       .then((data: Deal[]) => {
         setDeals(data);
-        // Set countdown from first deal's expiresAt
-        if (data.length > 0 && data[0].expiresAt) {
-          const diff = Math.max(0, new Date(data[0].expiresAt).getTime() - Date.now());
-          const totalSeconds = Math.floor(diff / 1000);
-          setTimeLeft({
-            days: Math.floor(totalSeconds / 86400),
-            hours: Math.floor((totalSeconds % 86400) / 3600),
-            minutes: Math.floor((totalSeconds % 3600) / 60),
-            seconds: totalSeconds % 60,
+        // Expand first deal by default
+        if (data.length > 0) {
+          setExpandedId(data[0].id);
+          // Initialize per-deal timers from each deal's expiresAt
+          const initialTimers: Record<string, TimeLeft> = {};
+          data.forEach((deal) => {
+            if (deal.expiresAt) {
+              initialTimers[deal.id] = calcTimeLeft(deal.expiresAt);
+            }
           });
+          setTimers(initialTimers);
         }
       })
       .catch((err) => {
@@ -69,7 +77,7 @@ export function DealsOfTheMonth() {
     const options = {
       root: null,
       rootMargin: "0px",
-      threshold: 0.2, // Trigger when at least 20% of the element is visible
+      threshold: 0.2,
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -94,41 +102,41 @@ export function DealsOfTheMonth() {
     };
   }, []);
 
-  // Countdown timer logic
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (timeLeft.seconds > 0) {
-        setTimeLeft({ ...timeLeft, seconds: timeLeft.seconds - 1 });
-      } else if (timeLeft.minutes > 0) {
-        setTimeLeft({
-          ...timeLeft,
-          minutes: timeLeft.minutes - 1,
-          seconds: 59,
-        });
-      } else if (timeLeft.hours > 0) {
-        setTimeLeft({
-          ...timeLeft,
-          hours: timeLeft.hours - 1,
-          minutes: 59,
-          seconds: 59,
-        });
-      } else if (timeLeft.days > 0) {
-        setTimeLeft({
-          ...timeLeft,
-          days: timeLeft.days - 1,
-          hours: 23,
-          minutes: 59,
-          seconds: 59,
-        });
+  // Tick all deal timers every second
+  const tickTimers = useCallback(() => {
+    setTimers((prev) => {
+      const next: Record<string, TimeLeft> = {};
+      for (const id in prev) {
+        const t = prev[id];
+        if (t.seconds > 0) {
+          next[id] = { ...t, seconds: t.seconds - 1 };
+        } else if (t.minutes > 0) {
+          next[id] = { ...t, minutes: t.minutes - 1, seconds: 59 };
+        } else if (t.hours > 0) {
+          next[id] = { ...t, hours: t.hours - 1, minutes: 59, seconds: 59 };
+        } else if (t.days > 0) {
+          next[id] = { ...t, days: t.days - 1, hours: 23, minutes: 59, seconds: 59 };
+        } else {
+          next[id] = t; // expired
+        }
       }
-    }, 1000);
+      return next;
+    });
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [timeLeft]);
+  useEffect(() => {
+    if (Object.keys(timers).length === 0) return;
+    const interval = setInterval(tickTimers, 1000);
+    return () => clearInterval(interval);
+  }, [timers, tickTimers]);
 
   // Format the number to always have two digits
   const formatNumber = (num: number): string => {
     return num.toString().padStart(2, "0");
+  };
+
+  const handleDealClick = (dealId: string) => {
+    setExpandedId(dealId);
   };
 
   const containerVariants = {
@@ -182,19 +190,19 @@ export function DealsOfTheMonth() {
             <motion.div
               key={deal.id}
               variants={itemVariants}
-              className="transition-all duration-500"
+              className="transition-all duration-500 cursor-pointer"
               style={{
-                flex: hoveredId === deal.id ? "2 1 0%" : (hoveredId && hoveredId !== deal.id) ? "1 1 0%" : "1.5 1 0%",
+                flex: expandedId === deal.id ? "2 1 0%" : "1 1 0%",
                 transition: "flex 0.5s ease-in-out"
               }}
+              onClick={() => handleDealClick(deal.id)}
             >
               <DealCard
                 deal={deal}
-                hoveredId={hoveredId}
-                setHoveredId={setHoveredId}
-                isAnimationEnabled={true}
-                timeLeft={index === deals.length - 1 ? timeLeft : undefined}
-                formatNumber={index === deals.length - 1 ? formatNumber : undefined}
+                isExpanded={expandedId === deal.id}
+                isFirst={index === 0}
+                timeLeft={timers[deal.id]}
+                formatNumber={formatNumber}
               />
             </motion.div>
           ))}
@@ -206,31 +214,24 @@ export function DealsOfTheMonth() {
 
 interface DealCardProps {
   deal: Deal;
-  hoveredId: string | null;
-  setHoveredId: (id: string | null) => void;
+  isExpanded: boolean;
+  isFirst: boolean;
   timeLeft?: TimeLeft;
-  formatNumber?: (num: number) => string;
-  isAnimationEnabled?: boolean;
+  formatNumber: (num: number) => string;
 }
 
-function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAnimationEnabled = false }: DealCardProps) {
-  const isHovered = hoveredId === deal.id;
-  const isShrinking = hoveredId !== null && hoveredId !== deal.id;
-
+function DealCard({ deal, isExpanded, isFirst, timeLeft, formatNumber }: DealCardProps) {
   return (
     <motion.div
-      className={`relative rounded-lg overflow-hidden transition-all duration-500 cursor-pointer min-h-[450px] h-auto md:h-[500px] lg:h-[600px] border-3 border-white`}
-      onMouseEnter={() => isAnimationEnabled && setHoveredId(deal.id)}
-      onMouseLeave={() => isAnimationEnabled && setHoveredId(null)}
-      whileHover={{ scale: 1.02 }}
+      className={`relative rounded-lg overflow-hidden transition-all duration-500 min-h-[450px] h-auto md:h-[500px] lg:h-[600px] border-3 border-white`}
       animate={{
-        scale: isHovered ? 1.02 : isShrinking ? 0.98 : 1
+        scale: isExpanded ? 1.02 : 0.98
       }}
       transition={{ duration: 0.4 }}
     >
       <div
         className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10 transition-opacity duration-300 ${
-          isHovered ? "opacity-90" : "opacity-100"
+          isExpanded ? "opacity-90" : "opacity-100"
         }`}
       ></div>
       <Image
@@ -238,17 +239,25 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
         alt={deal.title}
         fill
         className={`object-cover transition-transform duration-500 ${
-          isHovered ? "scale-110" : "scale-100"
+          isExpanded ? "scale-110" : "scale-100"
         }`}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         loading="lazy"
       />
+
+      {/* "Closing Soon" badge for the first deal */}
+      {isFirst && (
+        <div className="absolute top-4 left-4 z-20 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full animate-pulse">
+          🔥 Closing Soon
+        </div>
+      )}
+
       <div className="absolute bottom-0 left-0 w-full p-6 z-20 transition-all duration-500">
         <motion.h3
           initial={{ opacity: 0, y: 20 }}
           animate={{
-            opacity: isHovered ? 1 : 0,
-            y: isHovered ? 0 : 20,
+            opacity: isExpanded ? 1 : 0,
+            y: isExpanded ? 0 : 20,
           }}
           transition={{ duration: 0.3 }}
           className={`text-2xl sm:text-3xl md:text-4xl font-bold text-white font-['Gill_Sans_MT']`}
@@ -258,9 +267,9 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{
-            opacity: isHovered ? 1 : 0,
-            height: isHovered ? "auto" : 0,
-            marginTop: isHovered ? 10 : 0,
+            opacity: isExpanded ? 1 : 0,
+            height: isExpanded ? "auto" : 0,
+            marginTop: isExpanded ? 10 : 0,
           }}
           transition={{ duration: 0.3 }}
           className="text-white text-sm sm:text-lg line-clamp-3 sm:line-clamp-none"
@@ -268,13 +277,13 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
           {deal.description}
         </motion.div>
 
-        {isHovered && (
+        {isExpanded && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: isHovered ? 1 : 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.4 }}
           >
-            <Link href={deal.linkUrl}>
+            <Link href={deal.linkUrl} onClick={(e) => e.stopPropagation()}>
             <Button
               className="w-[150px] sm:w-[200px] h-[40px] sm:h-[50px] bg-[--primary] hover:bg-[#018e01] text-white rounded-[30px] shadow-lg text-sm sm:text-lg font-['Gill_Sans_MT'] mt-4"
               aria-label={deal.linkLabel}
@@ -300,7 +309,7 @@ function DealCard({ deal, hoveredId, setHoveredId, timeLeft, formatNumber, isAni
             </Button>
             </Link>
 
-            {timeLeft && formatNumber && (
+            {timeLeft && (
               <div className="mt-4 sm:mt-8">
                 <p className="text-lg sm:text-xl md:text-2xl text-white mb-2 sm:mb-3 font-['Gill_Sans_MT']">
                   Hurry, Before It&apos;s Too Late!
