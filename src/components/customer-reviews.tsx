@@ -58,6 +58,7 @@ const CustomerReviews = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
@@ -78,12 +79,25 @@ const CustomerReviews = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Auto-scroll reviews every 5 seconds
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentReviewIndex((prev) => (prev + 1) % mockReviews.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
   const handleNextReview = () => {
     setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % mockReviews.length);
+    setIsPaused(true);
+    setTimeout(() => setIsPaused(false), 8000);
   };
 
   const handlePrevReview = () => {
     setCurrentReviewIndex((prevIndex) => (prevIndex - 1 + mockReviews.length) % mockReviews.length);
+    setIsPaused(true);
+    setTimeout(() => setIsPaused(false), 8000);
   };
 
   // Touch handlers for swipe functionality
@@ -195,7 +209,11 @@ const CustomerReviews = () => {
             {mockReviews.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentReviewIndex(index)}
+                onClick={() => {
+                  setCurrentReviewIndex(index);
+                  setIsPaused(true);
+                  setTimeout(() => setIsPaused(false), 8000);
+                }}
                 className={`w-2 h-2 rounded-full transition-all duration-200 ${
                   index === currentReviewIndex 
                     ? 'bg-primary w-6' 

@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import ScriptLoader from "@/components/script-loader";
 import CursorArrow from "@/components/CursorArrow";
+import { CartProvider } from "@/context/CartContext";
+import { MiniCart } from "@/components/MiniCart";
 
 interface ClientLayoutWrapperProps {
   children: React.ReactNode;
@@ -18,9 +20,12 @@ const ClientLayoutWrapper: React.FC<ClientLayoutWrapperProps> = ({ children, bod
 
   return (
     <body className={bodyClassName}>
-      <ScriptLoader />
-      {isClient && <CursorArrow />}
-      {children}
+      <CartProvider>
+        <ScriptLoader />
+        {isClient && <CursorArrow />}
+        <MiniCart />
+        {children}
+      </CartProvider>
     </body>
   );
 };

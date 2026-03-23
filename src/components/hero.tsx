@@ -102,9 +102,9 @@ export function Hero({ title, images }: HeroProps) {
       onTouchStart={() => setIsPaused(true)}
       onTouchEnd={() => setTimeout(() => setIsPaused(false), 5000)}
     >
-      {/* Social Media Icons */}
-      <div className="hidden lg:block absolute right-6 top-1/2 -translate-y-1/2 w-[70px] h-[350px] bg-white/10 backdrop-blur-md rounded-full z-20">
-        <div className="flex flex-col items-center justify-center h-full gap-10">
+      {/* Social Media Icons - hidden by default, slide in from right on hover */}
+      <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[90px] h-[380px] z-20 group">
+        <div className="absolute right-0 top-0 flex flex-col items-center justify-center h-full gap-10 w-[70px] bg-white/10 backdrop-blur-md rounded-l-full translate-x-full group-hover:translate-x-4 transition-transform duration-300 ease-in-out">
           <a
             href="#"
             className="transition-transform hover:scale-110 text-white"
@@ -218,7 +218,7 @@ export function Hero({ title, images }: HeroProps) {
               <Button
             variant="outline"
             size="icon"
-            className="rounded-full bg-overlay backdrop-blur-sm border-none text-white hover:bg-primary h-12 w-12 md:h-14 md:w-14 shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
+            className="rounded-full bg-overlay backdrop-blur-sm border-none text-white hover:bg-primary h-10 w-10 shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
             onClick={() => {
               api?.scrollPrev();
               handleControlInteraction();
@@ -231,7 +231,7 @@ export function Hero({ title, images }: HeroProps) {
               viewBox="0 0 24 24"
               strokeWidth={2}
               stroke="currentColor"
-              className="w-6 h-6 md:w-7 md:h-7"
+              className="w-5 h-5"
             >
               <path
                 strokeLinecap="round"
@@ -243,7 +243,7 @@ export function Hero({ title, images }: HeroProps) {
               <Button
             variant="outline"
             size="icon"
-            className="rounded-full bg-primary/80 backdrop-blur-sm border-none text-white hover:bg-primary h-12 w-12 md:h-14 md:w-14 shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
+            className="rounded-full bg-primary/80 backdrop-blur-sm border-none text-white hover:bg-primary h-10 w-10 shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
             onClick={() => {
               api?.scrollNext();
               handleControlInteraction();
@@ -256,7 +256,7 @@ export function Hero({ title, images }: HeroProps) {
               viewBox="0 0 24 24"
               strokeWidth={2}
               stroke="currentColor"
-              className="w-6 h-6 md:w-7 md:h-7"
+              className="w-5 h-5"
             >
               <path
                 strokeLinecap="round"
