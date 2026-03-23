@@ -102,7 +102,7 @@ export function DealsOfTheMonth() {
     };
   }, []);
 
-  // Tick all deal timers every second
+  // Tick all deal timers every second (only starts once deals are loaded)
   const tickTimers = useCallback(() => {
     setTimers((prev) => {
       const next: Record<string, TimeLeft> = {};
@@ -124,11 +124,13 @@ export function DealsOfTheMonth() {
     });
   }, []);
 
+  const hasTimers = Object.keys(timers).length > 0;
+
   useEffect(() => {
-    if (Object.keys(timers).length === 0) return;
+    if (!hasTimers) return;
     const interval = setInterval(tickTimers, 1000);
     return () => clearInterval(interval);
-  }, [timers, tickTimers]);
+  }, [hasTimers, tickTimers]);
 
   // Format the number to always have two digits
   const formatNumber = (num: number): string => {
@@ -196,6 +198,11 @@ export function DealsOfTheMonth() {
                 transition: "flex 0.5s ease-in-out"
               }}
               onClick={() => handleDealClick(deal.id)}
+              role="button"
+              tabIndex={0}
+              aria-expanded={expandedId === deal.id}
+              aria-label={`${deal.title} - click to expand`}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleDealClick(deal.id); } }}
             >
               <DealCard
                 deal={deal}

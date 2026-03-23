@@ -24,6 +24,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null);
 
+// Demo defaults – in production this would be empty and populated from the backend/localStorage
 const defaultItems: CartItem[] = [
   { id: "1", title: "Classic Mud Pot", price: 1200, quantity: 2, image: "/images/Leonardo_Phoenix_10_I_want_a_highly_detailed_and_colorful_illu_0.png", category: "Water Pots" },
   { id: "2", title: "Earthen Cooker", price: 1800, quantity: 1, image: "/images/Leonardo_Phoenix_10_A_beautifully_styled_highquality_image_of_0.png", category: "Cookware" },
