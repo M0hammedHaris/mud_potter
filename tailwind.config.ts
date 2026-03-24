@@ -8,6 +8,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        // Primary app font matching the Figma design
+        sans: ["'Gill Sans MT'", "'Gill Sans'", "Calibri", "'Trebuchet MS'", "sans-serif"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

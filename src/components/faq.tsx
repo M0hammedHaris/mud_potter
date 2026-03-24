@@ -114,8 +114,7 @@ export function FAQ() {
   return (
     <section 
       ref={sectionRef} 
-      className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-8 overflow-hidden" 
-      style={{ background: 'linear-gradient(to right, #ffffff 50%, var(--background) 50%)' }}
+      className="py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-8 overflow-hidden bg-[var(--background)]" 
       data-testid="faq-section"
     >
       <div className="container mx-auto max-w-full">
