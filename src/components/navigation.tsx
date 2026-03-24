@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,37 +9,45 @@ import { useCart } from "@/context/CartContext";
 import { cn } from "@/lib/utils";
 import "./navigation.css";
 
+const shopCategories = [
+    { name: "Water Pots", icon: "🏺", description: "Keep water cool & fresh naturally", href: "/shop?category=Water%20Pots" },
+    { name: "Cookware", icon: "🍲", description: "Traditional clay cooking vessels", href: "/shop?category=Cookware" },
+    { name: "Garden Decors", icon: "🌿", description: "Handcrafted garden pottery pieces", href: "/shop?category=Garden%20Decors" },
+    { name: "Sacred Crafts", icon: "🪔", description: "Spiritual & ceremonial pottery", href: "/shop?category=Sacred%20Crafts" },
+    { name: "Planters", icon: "🌱", description: "Beautiful terracotta planters", href: "/shop?category=Planters" },
+];
+
 export function Navigation() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeSearch, setActiveSearch] = useState(false);
+    const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
+    const [mobileShopExpanded, setMobileShopExpanded] = useState(false);
     const pathname = usePathname();
     const { openCart, totalItems } = useCart();
+    const shopDropdownRef = useRef<HTMLDivElement>(null);
 
     // Pages that have a dark hero image behind the nav — white text works there.
     // All other pages have a light background and need dark-styled nav.
     const darkHeroPages = ['/', '/shop'];
     const isLightPage = !darkHeroPages.includes(pathname);
 
-    // Navigation items data
+    // Navigation items rendered after the Shop dropdown
     const navItems = [
-        { label: "Home", href: "/" },
-        { label: "Shop", href: "/shop" },
         { label: "About", href: "/about" },
     ];
 
     // Close menu when ESC key is pressed
     useEffect(() => {
         const handleEscKey = (event: KeyboardEvent) => {
-            if (event.key === 'Escape' && isMobileMenuOpen) {
-                setIsMobileMenuOpen(false);
+            if (event.key === 'Escape') {
+                if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+                if (shopDropdownOpen) setShopDropdownOpen(false);
             }
         };
 
         window.addEventListener('keydown', handleEscKey);
-        
-        // Clean up
         return () => window.removeEventListener('keydown', handleEscKey);
-    }, [isMobileMenuOpen]);
+    }, [isMobileMenuOpen, shopDropdownOpen]);
 
     // Prevent body scroll when mobile menu is open - only runs on client
     useEffect(() => {
@@ -49,30 +57,21 @@ export function Navigation() {
             } else {
                 document.body.style.overflow = '';
             }
-            
-            return () => {
-                document.body.style.overflow = '';
-            };
+            return () => { document.body.style.overflow = ''; };
         }
     }, [isMobileMenuOpen]);
 
     // Fix for hydration: use useEffect to render client-only debugging elements
     const [isClient, setIsClient] = useState(false);
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    useEffect(() => { setIsClient(true); }, []);
+
+    const isShopActive = pathname === '/shop' || pathname.startsWith('/shop');
 
     return (
         <header className={cn(
             "absolute top-4 left-4 right-4 z-50",
             isLightPage && "rounded-2xl bg-white/95 backdrop-blur-sm shadow-md"
         )}>
-            {/* Debug indicator - only rendered on client side to avoid hydration errors */}
-            {isClient && process.env.NODE_ENV !== 'production' && (
-                <div className="menu-debug">
-                    Menu state: {isMobileMenuOpen ? 'Open' : 'Closed'}
-                </div>
-            )}
             <nav className="flex items-center justify-between px-6 py-4 md:px-16 rounded-t-[20px]">
                 {/* Mobile menu toggle button */}
                 <div className="md:hidden relative z-50">
@@ -97,14 +96,107 @@ export function Navigation() {
                 </div>
 
                 {/* Desktop navigation */}
-                <div className="hidden md:flex items-center gap-4" style={{ width: "auto", height: "36px" }}>
-                    {/* Navigation Items */}
+                <div className="hidden md:flex items-center gap-2">
+                    {/* Home */}
+                    <Link
+                        href="/"
+                        className={cn(
+                            "flex justify-center items-center px-4 py-1 h-[36px] text-[16px] font-semibold transition-all rounded-[18px]",
+                            pathname === '/'
+                                ? "bg-[var(--primary)] text-white"
+                                : isLightPage
+                                    ? "text-[var(--foreground)] hover:bg-[var(--accent)]"
+                                    : "bg-transparent text-white/80 hover:bg-white/30"
+                        )}
+                    >
+                        Home
+                    </Link>
+
+                    {/* Shop with dropdown */}
+                    <div
+                        ref={shopDropdownRef}
+                        className="relative"
+                        onMouseEnter={() => setShopDropdownOpen(true)}
+                        onMouseLeave={() => setShopDropdownOpen(false)}
+                    >
+                        <Link
+                            href="/shop"
+                            className={cn(
+                                "flex items-center gap-1 px-4 py-1 h-[36px] text-[16px] font-semibold transition-all rounded-[18px]",
+                                isShopActive
+                                    ? "bg-[var(--primary)] text-white"
+                                    : isLightPage
+                                        ? "text-[var(--foreground)] hover:bg-[var(--accent)]"
+                                        : "bg-transparent text-white/80 hover:bg-white/30"
+                            )}
+                        >
+                            Shop
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2.5}
+                                stroke="currentColor"
+                                className={cn("w-3.5 h-3.5 transition-transform duration-200", shopDropdownOpen && "rotate-180")}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </Link>
+
+                        {/* Dropdown mega-menu */}
+                        <div
+                            className={cn(
+                                "absolute top-full left-1/2 -translate-x-1/2 pt-3 z-[200] transition-all duration-200 origin-top",
+                                shopDropdownOpen
+                                    ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto"
+                                    : "opacity-0 scale-y-95 -translate-y-1 pointer-events-none"
+                            )}
+                        >
+                            <div className="bg-[#fff9e5] rounded-2xl shadow-2xl border border-[var(--border)] p-6 w-[540px]">
+                                <p className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-[0.15em] mb-4">
+                                    Shop by Category
+                                </p>
+                                <div className="grid grid-cols-2 gap-2 mb-5">
+                                    {shopCategories.map(cat => (
+                                        <Link
+                                            key={cat.name}
+                                            href={cat.href}
+                                            onClick={() => setShopDropdownOpen(false)}
+                                            className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--accent)] transition-colors duration-150 group"
+                                        >
+                                            <span className="text-2xl flex-shrink-0 mt-0.5">{cat.icon}</span>
+                                            <div className="min-w-0">
+                                                <p className="font-semibold text-sm text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
+                                                    {cat.name}
+                                                </p>
+                                                <p className="text-xs text-[var(--muted-foreground)] leading-tight mt-0.5">
+                                                    {cat.description}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                                <Link
+                                    href="/shop"
+                                    onClick={() => setShopDropdownOpen(false)}
+                                    className="flex items-center justify-center gap-2 w-full py-3 bg-[var(--primary)] text-white rounded-xl font-semibold text-sm hover:bg-[var(--primary)]/90 transition-colors duration-150"
+                                >
+                                    View All Products
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                    </svg>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* About */}
                     {navItems.map((item) => (
                         <Link
                             key={item.label}
                             href={item.href}
                             className={cn(
-                                "flex justify-center items-center px-4 py-1 w-[90px] h-[36px] text-[16px] font-semibold transition-all rounded-[18px]",
+                                "flex justify-center items-center px-4 py-1 h-[36px] text-[16px] font-semibold transition-all rounded-[18px]",
                                 pathname === item.href
                                     ? "bg-[var(--primary)] text-white"
                                     : isLightPage
@@ -183,7 +275,7 @@ export function Navigation() {
             {/* Mobile Navigation Slide-in Menu */}
             <div 
                 id="mobile-menu"
-                className={`fixed top-0 left-0 h-full w-[280px] bg-black/90 backdrop-blur-lg ${isClient && isMobileMenuOpen ? 'slide-in' : '-translate-x-full'} md:hidden z-50 shadow-xl`}
+                className={`fixed top-0 left-0 h-full w-[280px] bg-black/90 backdrop-blur-lg ${isClient && isMobileMenuOpen ? 'slide-in' : '-translate-x-full'} md:hidden z-50 shadow-xl overflow-y-auto`}
             >
                 {/* Close button at the top */}
                 <div className="flex justify-end p-6">
@@ -200,15 +292,73 @@ export function Navigation() {
                 </div>
                 
                 {/* Navigation links */}
-                <div className="flex flex-col items-center gap-6 p-4 mt-6">
+                <div className="flex flex-col items-center gap-3 p-4 mt-2">
+                    {/* Home */}
+                    <Link
+                        href="/"
+                        className={`flex justify-center items-center px-4 py-2 w-full h-[48px] rounded-[24px] text-[18px] font-semibold transition-all ${
+                            pathname === '/' ? "bg-secondary text-primary" : "bg-white/20 text-white/80 hover:bg-white/30"
+                        }`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        Home
+                        <span className="ml-2 opacity-70">→</span>
+                    </Link>
+
+                    {/* Shop (expandable) */}
+                    <div className="w-full">
+                        <button
+                            className={`flex justify-between items-center px-4 py-2 w-full h-[48px] rounded-[24px] text-[18px] font-semibold transition-all ${
+                                isShopActive ? "bg-secondary text-primary" : "bg-white/20 text-white/80 hover:bg-white/30"
+                            }`}
+                            onClick={() => setMobileShopExpanded(!mobileShopExpanded)}
+                            aria-expanded={mobileShopExpanded}
+                        >
+                            <span>Shop</span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className={cn("w-4 h-4 transition-transform duration-200", mobileShopExpanded && "rotate-180")}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        {/* Shop sub-categories */}
+                        {mobileShopExpanded && (
+                            <div className="mt-2 ml-2 flex flex-col gap-1 animate-fade-in">
+                                {shopCategories.map(cat => (
+                                    <Link
+                                        key={cat.name}
+                                        href={cat.href}
+                                        onClick={() => { setIsMobileMenuOpen(false); setMobileShopExpanded(false); }}
+                                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors text-[15px]"
+                                    >
+                                        <span className="text-lg">{cat.icon}</span>
+                                        {cat.name}
+                                    </Link>
+                                ))}
+                                <Link
+                                    href="/shop"
+                                    onClick={() => { setIsMobileMenuOpen(false); setMobileShopExpanded(false); }}
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[var(--primary)] hover:bg-white/10 transition-colors text-[15px] font-semibold"
+                                >
+                                    View All →
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* About */}
                     {navItems.map((item) => (
                         <Link
                             key={item.label}
                             href={item.href}
                             className={`flex justify-center items-center px-4 py-2 w-full h-[48px] rounded-[24px] text-[18px] font-semibold transition-all ${
-                                pathname === item.href
-                                ? "bg-secondary text-primary" 
-                                : "bg-white/20 text-white/80 hover:bg-white/30"
+                                pathname === item.href ? "bg-secondary text-primary" : "bg-white/20 text-white/80 hover:bg-white/30"
                             }`}
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
@@ -218,7 +368,7 @@ export function Navigation() {
                     ))}
                 </div>
                 
-                {/* Additional menu items or social links could go here */}
+                {/* Social links */}
                 <div className="absolute bottom-10 w-full flex justify-center space-x-4 px-4">
                     <Button 
                         variant="ghost"
@@ -248,3 +398,4 @@ export function Navigation() {
         </header>
     );
 }
+
