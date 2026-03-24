@@ -74,7 +74,7 @@ function ShopContent() {
 
   const filterPanel = (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-[var(--border)]">
-      <h2 className="text-lg font-bold font-['Gill_Sans_MT'] text-[var(--foreground)] mb-5">Filters</h2>
+      <h2 className="text-lg font-bold text-[var(--foreground)] mb-5">Filters</h2>
 
       {/* Search */}
       <div className="mb-5">
@@ -196,7 +196,7 @@ function ShopContent() {
                       </div>
                       {/* Bottom overlay with name, price, stars */}
                       <div className="absolute bottom-0 left-0 right-0 px-4 py-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                        <h3 className="text-lg font-bold font-['Gill_Sans_MT'] text-white mb-1">{product.title}</h3>
+                        <h3 className="text-lg font-bold text-white mb-1">{product.title}</h3>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1">
                             {[...Array(5)].map((_, i) => (

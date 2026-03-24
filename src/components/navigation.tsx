@@ -36,7 +36,7 @@ export function Navigation() {
         { label: "About", href: "/about" },
     ];
 
-    // Close menu when ESC key is pressed
+    // Close menu / shop dropdown when ESC is pressed; close shop dropdown on outside click
     useEffect(() => {
         const handleEscKey = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -44,9 +44,18 @@ export function Navigation() {
                 if (shopDropdownOpen) setShopDropdownOpen(false);
             }
         };
+        const handleClickOutside = (event: MouseEvent) => {
+            if (shopDropdownRef.current && !shopDropdownRef.current.contains(event.target as Node)) {
+                setShopDropdownOpen(false);
+            }
+        };
 
         window.addEventListener('keydown', handleEscKey);
-        return () => window.removeEventListener('keydown', handleEscKey);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            window.removeEventListener('keydown', handleEscKey);
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, [isMobileMenuOpen, shopDropdownOpen]);
 
     // Prevent body scroll when mobile menu is open - only runs on client
@@ -118,9 +127,23 @@ export function Navigation() {
                         className="relative"
                         onMouseEnter={() => setShopDropdownOpen(true)}
                         onMouseLeave={() => setShopDropdownOpen(false)}
+                        onBlur={(e) => {
+                            // Close when focus leaves the entire dropdown container
+                            if (!shopDropdownRef.current?.contains(e.relatedTarget as Node)) {
+                                setShopDropdownOpen(false);
+                            }
+                        }}
                     >
                         <Link
                             href="/shop"
+                            aria-haspopup="menu"
+                            aria-expanded={shopDropdownOpen}
+                            onKeyDown={(e) => {
+                                if (e.key === 'ArrowDown' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setShopDropdownOpen(true);
+                                }
+                            }}
                             className={cn(
                                 "flex items-center gap-1 px-4 py-1 h-[36px] text-[16px] font-semibold transition-all rounded-[18px]",
                                 isShopActive
@@ -137,6 +160,7 @@ export function Navigation() {
                                 viewBox="0 0 24 24"
                                 strokeWidth={2.5}
                                 stroke="currentColor"
+                                aria-hidden="true"
                                 className={cn("w-3.5 h-3.5 transition-transform duration-200", shopDropdownOpen && "rotate-180")}
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -145,6 +169,8 @@ export function Navigation() {
 
                         {/* Dropdown mega-menu */}
                         <div
+                            role="menu"
+                            aria-label="Shop categories"
                             className={cn(
                                 "absolute top-full left-1/2 -translate-x-1/2 pt-3 z-[200] transition-all duration-200 origin-top",
                                 shopDropdownOpen
@@ -161,10 +187,11 @@ export function Navigation() {
                                         <Link
                                             key={cat.name}
                                             href={cat.href}
+                                            role="menuitem"
                                             onClick={() => setShopDropdownOpen(false)}
                                             className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--accent)] transition-colors duration-150 group"
                                         >
-                                            <span className="text-2xl flex-shrink-0 mt-0.5">{cat.icon}</span>
+                                            <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">{cat.icon}</span>
                                             <div className="min-w-0">
                                                 <p className="font-semibold text-sm text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
                                                     {cat.name}
@@ -178,11 +205,12 @@ export function Navigation() {
                                 </div>
                                 <Link
                                     href="/shop"
+                                    role="menuitem"
                                     onClick={() => setShopDropdownOpen(false)}
                                     className="flex items-center justify-center gap-2 w-full py-3 bg-[var(--primary)] text-white rounded-xl font-semibold text-sm hover:bg-[var(--primary)]/90 transition-colors duration-150"
                                 >
                                     View All Products
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                     </svg>
                                 </Link>
