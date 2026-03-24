@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
+import { cn } from "@/lib/utils";
 import "./navigation.css";
 
 export function Navigation() {
@@ -13,6 +14,11 @@ export function Navigation() {
     const [activeSearch, setActiveSearch] = useState(false);
     const pathname = usePathname();
     const { openCart, totalItems } = useCart();
+
+    // Pages that have a dark hero image behind the nav — white text works there.
+    // All other pages have a light background and need dark-styled nav.
+    const darkHeroPages = ['/', '/shop'];
+    const isLightPage = !darkHeroPages.includes(pathname);
 
     // Navigation items data
     const navItems = [
@@ -57,7 +63,10 @@ export function Navigation() {
     }, []);
 
     return (
-        <header className="absolute top-4 left-4 right-4 z-50">
+        <header className={cn(
+            "absolute top-4 left-4 right-4 z-50",
+            isLightPage && "rounded-2xl bg-white/95 backdrop-blur-sm shadow-md"
+        )}>
             {/* Debug indicator - only rendered on client side to avoid hydration errors */}
             {isClient && process.env.NODE_ENV !== 'production' && (
                 <div className="menu-debug">
@@ -69,17 +78,19 @@ export function Navigation() {
                 <div className="md:hidden relative z-50">
                     <Button
                         variant="ghost"
-                        className="rounded-full bg-white/30 backdrop-blur-sm p-3 transition-all hover:bg-white/40 hamburger-menu focus:outline-none focus:ring-2 focus:ring-white/50"
-                        onClick={() => {
-                            setIsMobileMenuOpen(!isMobileMenuOpen);
-                            console.log("Hamburger clicked, menu state:", !isMobileMenuOpen);
-                        }}
+                        className={cn(
+                            "rounded-full backdrop-blur-sm p-3 transition-all hamburger-menu focus:outline-none focus:ring-2",
+                            isLightPage
+                                ? "bg-[var(--accent)] hover:bg-[var(--accent)]/70 focus:ring-[var(--primary)]/30"
+                                : "bg-white/30 hover:bg-white/40 focus:ring-white/50"
+                        )}
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                         aria-expanded={isMobileMenuOpen}
                         aria-controls="mobile-menu"
                         style={{ minHeight: '44px', minWidth: '44px' }}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={cn("w-6 h-6", isLightPage ? "text-[var(--foreground)]" : "text-white")}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
                     </Button>
@@ -92,18 +103,21 @@ export function Navigation() {
                         <Link
                             key={item.label}
                             href={item.href}
-                            className={`flex justify-center items-center px-4 py-1 w-[90px] h-[36px] text-[16px] font-semibold transition-all rounded-[18px] ${
+                            className={cn(
+                                "flex justify-center items-center px-4 py-1 w-[90px] h-[36px] text-[16px] font-semibold transition-all rounded-[18px]",
                                 pathname === item.href
-                                ? "bg-secondary text-primary" 
-                                : "bg-transparent text-white/80 hover:bg-white/30"
-                            }`}
+                                    ? "bg-[var(--primary)] text-white"
+                                    : isLightPage
+                                        ? "text-[var(--foreground)] hover:bg-[var(--accent)]"
+                                        : "bg-transparent text-white/80 hover:bg-white/30"
+                            )}
                         >
                             {item.label}
                         </Link>
                     ))}
                 </div>
 
-                <div className="absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-3xl font-bold text-white">
+                <div className={cn("absolute left-1/2 transform -translate-x-1/2 text-2xl md:text-3xl font-bold", isLightPage ? "text-[var(--foreground)]" : "text-white")}>
                     <Link href="/">LOGO</Link>
                 </div>
                 
@@ -114,8 +128,11 @@ export function Navigation() {
                         aria-label="Shopping cart"
                         className="relative"
                     >
-                        <div className="w-10 h-10 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/40 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-white">
+                        <div className={cn(
+                            "w-10 h-10 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors",
+                            isLightPage ? "bg-[var(--accent)] hover:bg-[var(--accent)]/70" : "bg-white/30 hover:bg-white/40"
+                        )}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={cn("w-5 h-5", isLightPage ? "text-[var(--foreground)]" : "text-white")}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                             </svg>
                         </div>
@@ -126,17 +143,18 @@ export function Navigation() {
                         )}
                     </button>
                     <div className="relative">
-                        <div className={`flex items-center transition-all duration-500 ease-in-out ${
-                            activeSearch 
-                                ? "w-64 bg-white/20 backdrop-blur-sm rounded-full border border-white/30" 
-                                : "w-10 h-10 bg-white/30 rounded-full"
-                        }`}>
+                        <div className={cn(
+                            "flex items-center transition-all duration-500 ease-in-out",
+                            activeSearch
+                                ? cn("w-64 backdrop-blur-sm rounded-full border", isLightPage ? "bg-[var(--accent)]/50 border-[var(--border)]" : "bg-white/20 border-white/30")
+                                : cn("w-10 h-10 rounded-full", isLightPage ? "bg-[var(--accent)]" : "bg-white/30")
+                        )}>
                             <Button 
                                 variant="ghost" 
                                 className="rounded-full backdrop-blur-sm hover:bg-white/10 p-3 flex-shrink-0"
                                 onClick={() => setActiveSearch(!activeSearch)}
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5 text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={cn("w-4 h-4 md:w-5 md:h-5", isLightPage ? "text-[var(--foreground)]" : "text-white")}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                                 </svg>
                             </Button>
@@ -144,7 +162,7 @@ export function Navigation() {
                                 <input
                                     type="text"
                                     placeholder="Search..."
-                                    className="flex-1 bg-transparent text-white placeholder-white/70 px-4 py-2 outline-none text-sm animate-fade-in"
+                                    className={cn("flex-1 bg-transparent px-4 py-2 outline-none text-sm animate-fade-in", isLightPage ? "text-[var(--foreground)] placeholder-[var(--muted-foreground)]" : "text-white placeholder-white/70")}
                                     autoFocus
                                 />
                             )}

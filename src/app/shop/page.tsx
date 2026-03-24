@@ -35,6 +35,7 @@ function ShopContent() {
   const [sortBy, setSortBy] = useState("Featured");
   const [searchQuery, setSearchQuery] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   // Sync active category when URL param changes
@@ -66,107 +67,156 @@ function ShopContent() {
       return 0;
     });
 
-  return (
-    <div ref={sectionRef} className="container mx-auto px-4 md:px-8 py-12 max-w-7xl">
-        {/* Filters Bar */}
-        <div className={cn("flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-10", isVisible ? "animate-fade-in" : "opacity-0")}>
-          {/* Search */}
-          <div className="relative w-full md:w-72">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-[var(--border)] bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)] text-sm"
-            />
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-          </div>
+  const handleCategorySelect = (cat: string) => {
+    setActiveCategory(cat);
+    setFiltersOpen(false);
+  };
 
-          {/* Sort */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[var(--muted-foreground)] whitespace-nowrap">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-[var(--border)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-            >
-              {sortOptions.map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-          </div>
+  const filterPanel = (
+    <div className="bg-white rounded-2xl p-5 shadow-sm border border-[var(--border)]">
+      <h2 className="text-lg font-bold font-['Gill_Sans_MT'] text-[var(--foreground)] mb-5">Filters</h2>
+
+      {/* Search */}
+      <div className="mb-5">
+        <label className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide block mb-2">Search</label>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 rounded-full border border-[var(--border)] bg-[var(--background)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] text-sm"
+          />
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
         </div>
+      </div>
 
-        {/* Category Pills */}
-        <div className={cn("flex flex-wrap gap-2 mb-8", isVisible ? "animate-fade-in delay-100" : "opacity-0")}>
+      {/* Sort */}
+      <div className="mb-5">
+        <label className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide block mb-2">Sort By</label>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+        >
+          {sortOptions.map(opt => <option key={opt}>{opt}</option>)}
+        </select>
+      </div>
+
+      {/* Categories */}
+      <div>
+        <label className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide block mb-3">Category</label>
+        <div className="flex flex-col gap-1.5">
           {categories.map(cat => (
             <button
               key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => handleCategorySelect(cat)}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
+                "px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left",
                 activeCategory === cat
-                  ? "bg-[var(--primary)] text-white shadow-md"
-                  : "bg-white text-[var(--muted-foreground)] border border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                  ? "bg-[var(--primary)] text-white shadow-sm"
+                  : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)]"
               )}
             >
               {cat}
             </button>
           ))}
         </div>
+      </div>
+    </div>
+  );
 
-        {/* Results count */}
-        <p className={cn("text-sm text-[var(--muted-foreground)] mb-6", isVisible ? "animate-fade-in delay-200" : "opacity-0")}>
-          Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
-        </p>
+  return (
+    <div ref={sectionRef} className="container mx-auto px-4 md:px-8 py-12 max-w-7xl">
+      <div className={cn("flex flex-col md:flex-row gap-8", isVisible ? "animate-fade-in" : "opacity-0")}>
 
-        {/* Products Grid */}
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-xl text-[var(--muted-foreground)]">No products found matching your criteria.</p>
+        {/* Left Sidebar — desktop always visible, mobile collapsible */}
+        <aside className="w-full md:w-64 lg:w-72 flex-shrink-0">
+          {/* Mobile filter toggle */}
+          <div className="md:hidden mb-3">
+            <button
+              onClick={() => setFiltersOpen(!filtersOpen)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--border)] bg-white text-sm font-medium text-[var(--foreground)] shadow-sm w-full justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18M6 8h12M9 12h6M12 16h0" />
+                </svg>
+                Filters
+                {activeCategory !== "All" && (
+                  <span className="w-5 h-5 rounded-full bg-[var(--primary)] text-white text-xs flex items-center justify-center">1</span>
+                )}
+              </span>
+              <svg className={cn("w-4 h-4 transition-transform", filtersOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {filteredProducts.map((product, index) => (
-              <Link key={product.id} href={`/products/${product.id}`}>
-                <div
-                  className={cn("group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 relative", isVisible ? "animate-fade-in" : "opacity-0")}
-                  style={{ animationDelay: `${200 + index * 100}ms` }}
-                >
-                  {/* Full-height product image */}
-                  <div className="relative h-80 overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {/* Category badge */}
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-[var(--primary)]">
-                      {product.category}
-                    </div>
-                    {/* Bottom overlay with name, price, stars */}
-                    <div className="absolute bottom-0 left-0 right-0 px-4 py-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                      <h3 className="text-lg font-bold font-['Gill_Sans_MT'] text-white mb-1">{product.title}</h3>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => (
-                            <svg key={i} className={cn("w-3.5 h-3.5", i < Math.floor(product.rating) ? "text-[#FFD500]" : "text-white/40")} fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                          <span className="text-xs text-white/70 ml-1">({product.reviews})</span>
+
+          {/* Filter panel — always shown on desktop, toggled on mobile */}
+          <div className={cn("md:block md:sticky md:top-8", filtersOpen ? "block" : "hidden")}>
+            {filterPanel}
+          </div>
+        </aside>
+
+        {/* Right — Products */}
+        <main className="flex-1 min-w-0">
+          {/* Results count */}
+          <p className={cn("text-sm text-[var(--muted-foreground)] mb-6", isVisible ? "animate-fade-in delay-100" : "opacity-0")}>
+            Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+          </p>
+
+          {/* Products Grid */}
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-xl text-[var(--muted-foreground)]">No products found matching your criteria.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-6">
+              {filteredProducts.map((product, index) => (
+                <Link key={product.id} href={`/products/${product.id}`}>
+                  <div
+                    className={cn("group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 relative", isVisible ? "animate-fade-in" : "opacity-0")}
+                    style={{ animationDelay: `${200 + index * 100}ms` }}
+                  >
+                    {/* Full-height product image */}
+                    <div className="relative h-80 overflow-hidden">
+                      <Image
+                        src={product.image}
+                        alt={product.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      {/* Category badge */}
+                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-[var(--primary)]">
+                        {product.category}
+                      </div>
+                      {/* Bottom overlay with name, price, stars */}
+                      <div className="absolute bottom-0 left-0 right-0 px-4 py-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                        <h3 className="text-lg font-bold font-['Gill_Sans_MT'] text-white mb-1">{product.title}</h3>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, i) => (
+                              <svg key={i} className={cn("w-3.5 h-3.5", i < Math.floor(product.rating) ? "text-[#FFD500]" : "text-white/40")} fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                            ))}
+                            <span className="text-xs text-white/70 ml-1">({product.reviews})</span>
+                          </div>
+                          <span className="text-base font-bold text-white">₹{product.price.toLocaleString()}</span>
                         </div>
-                        <span className="text-base font-bold text-white">₹{product.price.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+                </Link>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
