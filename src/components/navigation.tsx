@@ -9,12 +9,95 @@ import { useCart } from "@/context/CartContext";
 import { cn } from "@/lib/utils";
 import "./navigation.css";
 
-const shopCategories = [
-    { name: "Water Pots", icon: "🏺", description: "Keep water cool & fresh naturally", href: "/shop?category=Water%20Pots" },
-    { name: "Cookware", icon: "🍲", description: "Traditional clay cooking vessels", href: "/shop?category=Cookware" },
-    { name: "Garden Decors", icon: "🌿", description: "Handcrafted garden pottery pieces", href: "/shop?category=Garden%20Decors" },
-    { name: "Sacred Crafts", icon: "🪔", description: "Spiritual & ceremonial pottery", href: "/shop?category=Sacred%20Crafts" },
-    { name: "Planters", icon: "🌱", description: "Beautiful terracotta planters", href: "/shop?category=Planters" },
+const megaMenuColumns = [
+    {
+        groups: [
+            {
+                label: "Cook wares",
+                items: [
+                    { name: "Redware", href: "/shop?category=Cookware&type=Redware" },
+                    { name: "Blackware", href: "/shop?category=Cookware&type=Blackware" },
+                ],
+            },
+            {
+                label: "Table toppers",
+                items: [
+                    { name: "Wooden Spoons", href: "/shop?category=Table+Toppers&type=Wooden+Spoons" },
+                    { name: "Wooden Spatula", href: "/shop?category=Table+Toppers&type=Wooden+Spatula" },
+                    { name: "Serving Spoon", href: "/shop?category=Table+Toppers&type=Serving+Spoon" },
+                ],
+            },
+            {
+                label: "Garden craft",
+                items: [
+                    { name: "Coco shell for small herb", href: "/shop?category=Garden+Craft&type=Coco+Shell" },
+                    { name: "High pot", href: "/shop?category=Garden+Craft&type=High+Pot" },
+                ],
+            },
+        ],
+    },
+    {
+        groups: [
+            {
+                label: "Sacred Crafts",
+                items: [
+                    { name: "Diya's", href: "/shop?category=Sacred+Crafts&type=Diyas" },
+                    { name: "Dhoop stand", href: "/shop?category=Sacred+Crafts&type=Dhoop+Stand" },
+                    { name: "Diya holder", href: "/shop?category=Sacred+Crafts&type=Diya+Holder" },
+                    { name: "Agarbathi stand", href: "/shop?category=Sacred+Crafts&type=Agarbathi+Stand" },
+                ],
+            },
+            {
+                label: "Mud Vault",
+                items: [
+                    { name: "Mudal", href: "/shop?category=Mud+Vault&type=Mudal" },
+                ],
+            },
+            {
+                label: "Nature Crafts Specials",
+                items: [
+                    { name: "Clay night lamp", href: "/shop?category=Nature+Crafts&type=Clay+Night+Lamp" },
+                ],
+            },
+        ],
+    },
+    {
+        groups: [
+            {
+                label: "Coco Crafts",
+                items: [
+                    { name: "Tea Cups", href: "/shop?category=Coco+Crafts&type=Tea+Cups" },
+                    { name: "Bowls", href: "/shop?category=Coco+Crafts&type=Bowls" },
+                    { name: "Cutlery", href: "/shop?category=Coco+Crafts&type=Cutlery" },
+                    { name: "Spices storage", href: "/shop?category=Coco+Crafts&type=Spices+Storage" },
+                    { name: "Piggybank", href: "/shop?category=Coco+Crafts&type=Piggybank" },
+                ],
+            },
+            {
+                label: "Aqua Earth",
+                items: [
+                    { name: "Water glasses", href: "/shop?category=Aqua+Earth&type=Water+Glasses" },
+                    { name: "Clay bottle", href: "/shop?category=Aqua+Earth&type=Clay+Bottle" },
+                    { name: "Clay Jug", href: "/shop?category=Aqua+Earth&type=Clay+Jug" },
+                ],
+            },
+        ],
+    },
+];
+
+const megaMenuFeaturedCards = [
+    {
+        title: "Table toppers",
+        subtitle: null,
+        href: "/shop?category=Table+Toppers",
+        image: "/images/kitchen-utensils-arrangement-top-view.png",
+    },
+    {
+        title: "Aqua Earth",
+        subtitle: "Shop All",
+        href: "/shop?category=Aqua+Earth",
+        image: "/images/vase.png",
+    },
 ];
 
 export function Navigation() {
@@ -172,48 +255,71 @@ export function Navigation() {
                             role="menu"
                             aria-label="Shop categories"
                             className={cn(
-                                "absolute top-full left-1/2 -translate-x-1/2 pt-3 z-[200] transition-all duration-200 origin-top",
+                                "absolute top-full left-0 pt-3 z-[200] transition-all duration-200 origin-top",
                                 shopDropdownOpen
                                     ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto"
                                     : "opacity-0 scale-y-95 -translate-y-1 pointer-events-none"
                             )}
                         >
-                            <div className="bg-[#fff9e5] rounded-2xl shadow-2xl border border-[var(--border)] p-6 w-[540px]">
-                                <p className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-[0.15em] mb-4">
+                            <div className="bg-white rounded-2xl shadow-2xl border border-[var(--border)] p-8 w-[920px]">
+                                <p className="text-2xl font-bold text-[var(--primary)] mb-6">
                                     Shop by Category
                                 </p>
-                                <div className="grid grid-cols-2 gap-2 mb-5">
-                                    {shopCategories.map(cat => (
-                                        <Link
-                                            key={cat.name}
-                                            href={cat.href}
-                                            role="menuitem"
-                                            onClick={() => setShopDropdownOpen(false)}
-                                            className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--accent)] transition-colors duration-150 group"
-                                        >
-                                            <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">{cat.icon}</span>
-                                            <div className="min-w-0">
-                                                <p className="font-semibold text-sm text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
-                                                    {cat.name}
-                                                </p>
-                                                <p className="text-xs text-[var(--muted-foreground)] leading-tight mt-0.5">
-                                                    {cat.description}
-                                                </p>
+                                <div className="flex gap-6">
+                                    {/* Text columns */}
+                                    <div className="flex gap-8 flex-1">
+                                        {megaMenuColumns.map((col, colIdx) => (
+                                            <div key={`col-${colIdx}`} className="flex flex-col gap-5 flex-1">
+                                                {col.groups.map((group) => (
+                                                    <div key={`col-${colIdx}-${group.label}`}>
+                                                        <p className="text-[11px] text-[var(--muted-foreground)] mb-1.5">
+                                                            {group.label}
+                                                        </p>
+                                                        <div className="flex flex-col gap-0.5">
+                                                            {group.items.map((item) => (
+                                                                <Link
+                                                                    key={item.name}
+                                                                    href={item.href}
+                                                                    role="menuitem"
+                                                                    onClick={() => setShopDropdownOpen(false)}
+                                                                    className="text-[15px] font-semibold text-[var(--foreground)] hover:text-[var(--primary)] transition-colors duration-150 leading-snug"
+                                                                >
+                                                                    {item.name}
+                                                                </Link>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        </Link>
-                                    ))}
+                                        ))}
+                                    </div>
+                                    {/* Featured image cards */}
+                                    <div className="flex gap-3 flex-shrink-0">
+                                        {megaMenuFeaturedCards.map((card) => (
+                                            <Link
+                                                key={card.title}
+                                                href={card.href}
+                                                role="menuitem"
+                                                onClick={() => setShopDropdownOpen(false)}
+                                                className="relative w-[160px] h-[220px] rounded-2xl overflow-hidden flex-shrink-0 group"
+                                            >
+                                                <Image
+                                                    src={card.image}
+                                                    alt={card.title}
+                                                    fill
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                                                <div className="absolute bottom-0 left-0 right-0 p-3">
+                                                    <p className="text-white font-bold text-[15px] leading-tight">{card.title}</p>
+                                                    {card.subtitle && (
+                                                        <p className="text-white/80 text-xs mt-0.5">{card.subtitle}</p>
+                                                    )}
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
-                                <Link
-                                    href="/shop"
-                                    role="menuitem"
-                                    onClick={() => setShopDropdownOpen(false)}
-                                    className="flex items-center justify-center gap-2 w-full py-3 bg-[var(--primary)] text-white rounded-xl font-semibold text-sm hover:bg-[var(--primary)]/90 transition-colors duration-150"
-                                >
-                                    View All Products
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                    </svg>
-                                </Link>
                             </div>
                         </div>
                     </div>
@@ -358,16 +464,20 @@ export function Navigation() {
                         {/* Shop sub-categories */}
                         {mobileShopExpanded && (
                             <div className="mt-2 ml-2 flex flex-col gap-1 animate-fade-in">
-                                {shopCategories.map(cat => (
-                                    <Link
-                                        key={cat.name}
-                                        href={cat.href}
-                                        onClick={() => { setIsMobileMenuOpen(false); setMobileShopExpanded(false); }}
-                                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors text-[15px]"
-                                    >
-                                        <span className="text-lg">{cat.icon}</span>
-                                        {cat.name}
-                                    </Link>
+                                {megaMenuColumns.flatMap((col, colIdx) => col.groups.map(group => ({ ...group, colIdx }))).map(group => (
+                                    <div key={`mobile-${group.colIdx}-${group.label}`}>
+                                        <p className="px-4 py-1 text-[11px] text-white/50 uppercase tracking-wider">{group.label}</p>
+                                        {group.items.map(item => (
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                onClick={() => { setIsMobileMenuOpen(false); setMobileShopExpanded(false); }}
+                                                className="flex items-center gap-3 px-4 py-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors text-[15px]"
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        ))}
+                                    </div>
                                 ))}
                                 <Link
                                     href="/shop"
