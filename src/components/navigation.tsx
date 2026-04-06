@@ -269,9 +269,9 @@ export function Navigation() {
                                     {/* Text columns */}
                                     <div className="flex gap-8 flex-1">
                                         {megaMenuColumns.map((col, colIdx) => (
-                                            <div key={colIdx} className="flex flex-col gap-5 flex-1">
+                                            <div key={`col-${colIdx}`} className="flex flex-col gap-5 flex-1">
                                                 {col.groups.map((group) => (
-                                                    <div key={group.label}>
+                                                    <div key={`col-${colIdx}-${group.label}`}>
                                                         <p className="text-[11px] text-[var(--muted-foreground)] mb-1.5">
                                                             {group.label}
                                                         </p>
@@ -464,8 +464,8 @@ export function Navigation() {
                         {/* Shop sub-categories */}
                         {mobileShopExpanded && (
                             <div className="mt-2 ml-2 flex flex-col gap-1 animate-fade-in">
-                                {megaMenuColumns.flatMap(col => col.groups).map(group => (
-                                    <div key={group.label}>
+                                {megaMenuColumns.flatMap((col, colIdx) => col.groups.map(group => ({ ...group, colIdx }))).map(group => (
+                                    <div key={`mobile-${group.colIdx}-${group.label}`}>
                                         <p className="px-4 py-1 text-[11px] text-white/50 uppercase tracking-wider">{group.label}</p>
                                         {group.items.map(item => (
                                             <Link
